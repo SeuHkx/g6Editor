@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="&#x56FE;&#x5C42;_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px" viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve">
+<g>
+	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="130.825" y1="76.843" x2="94.1543" y2="116.8474">
+		<stop  offset="0" style="stop-color:#35AAE2"/>
+		<stop  offset="0.181" style="stop-color:#33A7DF"/>
+		<stop  offset="0.3794" style="stop-color:#2E9ED8"/>
+		<stop  offset="0.5863" style="stop-color:#2690CB"/>
+		<stop  offset="0.7974" style="stop-color:#197DB9"/>
+		<stop  offset="1" style="stop-color:#0A66A5"/>
+	</linearGradient>
+	<path style="fill:url(#SVGID_1_);" d="M163.021,139.764h-59.482v-23.465c0-7.425-6.04-13.466-13.466-13.466h-18.42V43.351h18.42
+		c40.224,0,72.948,32.724,72.948,72.948V139.764z"/>
+	<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="72.3472" y1="111.9003" x2="72.3472" y2="35.0092">
+		<stop  offset="0" style="stop-color:#0A66A5"/>
+		<stop  offset="0.0685" style="stop-color:#1271AF"/>
+		<stop  offset="0.2694" style="stop-color:#258FCA"/>
+		<stop  offset="0.4231" style="stop-color:#31A2DC"/>
+		<stop  offset="0.5102" style="stop-color:#35AAE2"/>
+		<stop  offset="0.5888" style="stop-color:#33A6DE"/>
+		<stop  offset="0.6969" style="stop-color:#2C9AD4"/>
+		<stop  offset="0.8221" style="stop-color:#2087C3"/>
+		<stop  offset="0.9591" style="stop-color:#116EAC"/>
+		<stop  offset="1" style="stop-color:#0A66A5"/>
+	</linearGradient>
+	<rect x="65.819" y="35.009" style="fill:url(#SVGID_2_);" width="13.057" height="76.891"/>
+	<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="48.4093" y1="98.118" x2="48.4093" y2="48.7915">
+		<stop  offset="0" style="stop-color:#0A66A5"/>
+		<stop  offset="0.0685" style="stop-color:#1271AF"/>
+		<stop  offset="0.2694" style="stop-color:#258FCA"/>
+		<stop  offset="0.4231" style="stop-color:#31A2DC"/>
+		<stop  offset="0.5102" style="stop-color:#35AAE2"/>
+		<stop  offset="0.5888" style="stop-color:#33A6DE"/>
+		<stop  offset="0.6969" style="stop-color:#2C9AD4"/>
+		<stop  offset="0.8221" style="stop-color:#2087C3"/>
+		<stop  offset="0.9591" style="stop-color:#116EAC"/>
+		<stop  offset="1" style="stop-color:#0A66A5"/>
+	</linearGradient>
+	<rect x="31" y="48.792" style="fill:url(#SVGID_3_);" width="34.819" height="49.326"/>
+	<linearGradient id="SVGID_4_" gradientUnits="userSpaceOnUse" x1="94.1088" y1="134.7501" x2="171" y2="134.7501">
+		<stop  offset="0" style="stop-color:#0A66A5"/>
+		<stop  offset="0.0685" style="stop-color:#1271AF"/>
+		<stop  offset="0.2694" style="stop-color:#258FCA"/>
+		<stop  offset="0.4231" style="stop-color:#31A2DC"/>
+		<stop  offset="0.5102" style="stop-color:#35AAE2"/>
+		<stop  offset="0.5888" style="stop-color:#33A6DE"/>
+		<stop  offset="0.6969" style="stop-color:#2C9AD4"/>
+		<stop  offset="0.8221" style="stop-color:#2087C3"/>
+		<stop  offset="0.9591" style="stop-color:#116EAC"/>
+		<stop  offset="1" style="stop-color:#0A66A5"/>
+	</linearGradient>
+	<polygon style="fill:url(#SVGID_4_);" points="171,128.222 171,141.279 94.109,141.279 94.109,128.222 	"/>
+	<linearGradient id="SVGID_5_" gradientUnits="userSpaceOnUse" x1="107.8912" y1="158.6879" x2="157.2176" y2="158.6879">
+		<stop  offset="0" style="stop-color:#0A66A5"/>
+		<stop  offset="0.0685" style="stop-color:#1271AF"/>
+		<stop  offset="0.2694" style="stop-color:#258FCA"/>
+		<stop  offset="0.4231" style="stop-color:#31A2DC"/>
+		<stop  offset="0.5102" style="stop-color:#35AAE2"/>
+		<stop  offset="0.5888" style="stop-color:#33A6DE"/>
+		<stop  offset="0.6969" style="stop-color:#2C9AD4"/>
+		<stop  offset="0.8221" style="stop-color:#2087C3"/>
+		<stop  offset="0.9591" style="stop-color:#116EAC"/>
+		<stop  offset="1" style="stop-color:#0A66A5"/>
+	</linearGradient>
+	<polygon style="fill:url(#SVGID_5_);" points="157.218,141.279 157.218,176.097 107.891,176.097 107.891,141.279 	"/>
+</g>
+</svg>

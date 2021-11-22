@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .canvasPaint{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="canvasPaint" id="canvasPaint"></div>
+<script src="lib/antv/g6-4.2.7/g6.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.js"></script>
+<script src="bimFlowJSON.js"></script>
+<script>
+    $(function(){
+        let $canvasPaint = $('#canvasPaint');
+        const graph = new G6.Graph({
+            container: 'canvasPaint', // 指定图画布的容器 id
+            // 画布宽高
+            width: $canvasPaint.width(),
+            height: $canvasPaint.height(),
+            fitView: true,
+            modes: {
+                default: ['drag-canvas', 'zoom-canvas']
+            },
+            nodeStateStyles: {
+                click: {
+                    stroke: '#168DF8',
+                    lineWidth: 2,
+                    fill: '#168DF8'
+                }
+            }
+        });
+        // 读取数据
+        graph.data(bimFlowJSON);
+        // 渲染图
+        graph.render();
+        graph.setMinZoom(0.001);
+        graph.on('node:click', (e => {
+            const nodeItem = e.item;
+            const clickNodes = graph.findAllByState('node', 'click');
+            clickNodes.forEach((n) => {
+                graph.setItemState(n, 'click', false);
+            });
+            graph.setItemState(nodeItem, 'click', true);
+            console.log(nodeItem.getModel().props);
+        }));
+        graph.on('canvas:click',(e=>{
+            const clickNodes = graph.findAllByState('node', 'click');
+            clickNodes.forEach((n) => {
+                graph.setItemState(n, 'click', false);
+            });
+        }))
+    });
+</script>
+</body>
+</html>

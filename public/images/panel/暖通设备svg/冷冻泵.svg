@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="&#x56FE;&#x5C42;_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px" viewBox="0 0 182.298 151.214" style="enable-background:new 0 0 182.298 151.214;" xml:space="preserve">
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="46.7585" y1="20.1107" x2="46.7585" y2="69.4367">
+	<stop  offset="0" style="stop-color:#0F9A99"/>
+	<stop  offset="1" style="stop-color:#003433"/>
+</linearGradient>
+<rect x="13.084" y="20.111" style="fill:url(#SVGID_1_);" width="67.349" height="49.326"/>
+<rect x="34.447" y="118.645" style="fill:#067071;" width="116.489" height="19.888"/>
+<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="135.3094" y1="69.3583" x2="135.3094" y2="118.6842">
+	<stop  offset="0" style="stop-color:#0F9A99"/>
+	<stop  offset="1" style="stop-color:#003433"/>
+</linearGradient>
+<rect x="101.635" y="69.358" style="fill:url(#SVGID_2_);" width="67.349" height="49.326"/>
+<circle style="fill:#003838;" cx="92.691" cy="69.871" r="44.039"/>
+<g>
+	
+		<rect x="68.896" y="27.117" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -10.1654 66.1897)" style="fill:#866B2B;" width="11.838" height="36.497"/>
+	
+		<rect x="95.893" y="42.051" transform="matrix(0.5067 -0.8621 0.8621 0.5067 14.8202 121.8415)" style="fill:#866B2B;" width="35.978" height="11.838"/>
+	<rect x="105.24" y="75.317" style="fill:#866B2B;" width="31.016" height="11.838"/>
+	<rect x="85.352" y="78.631" style="fill:#866B2B;" width="11.838" height="38.12"/>
+	
+		<rect x="44.735" y="68.806" transform="matrix(0.9934 -0.1144 0.1144 0.9934 -8.1266 7.8587)" style="fill:#866B2B;" width="39.325" height="11.838"/>
+</g>
+<path style="fill:#067071;" d="M92.691,11.153c-32.429,0-58.718,26.289-58.718,58.718c0,32.429,26.289,58.718,58.718,58.718
+	S151.41,102.3,151.41,69.871C151.41,37.442,125.121,11.153,92.691,11.153z M92.691,113.91c-24.322,0-44.039-19.717-44.039-44.039
+	s19.717-44.039,44.039-44.039s44.039,19.717,44.039,44.039S117.013,113.91,92.691,113.91z"/>
+<circle style="fill:#016D6D;" cx="92.691" cy="69.397" r="26.044"/>
+</svg>

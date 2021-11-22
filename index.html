@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor</title>
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.7/css/layui.css"/>
+    <link rel="stylesheet" href="lib/simplebar-simplebar-5.3.3/dist/simplebar.css"/>
+    <link rel="stylesheet" href="lib/flatpickr/dist/flatpickr.min.css"/>
+    <link rel="stylesheet" href="public/fontEditor/iconfont.css"/>
+    <link rel="stylesheet" href="dist/css/editor-theme.css"/>
+</head>
+<body>
+<div id="toolsBar" class="topPanel"></div>
+<div class="leftPanel">
+    <div class="leftPanel-title">系统组件</div>
+    <div class="leftPanel-form" id="leftPanelForm"></div>
+</div>
+<div class="rightPanel" id="rightPanel">
+    <div class="rightPanel-title">
+        <i class="iconfontEditor icon-biaojuxinxi" style="vertical-align: middle;font-size: 14px;"></i>表具配置
+        <div class="rightPanel-title-group">
+            <div class="" data-tippy-content="解绑">
+                <i class="iconfontEditor icon-link"></i>
+            </div>
+            <div class="" data-tippy-content="保存" id="saveProps">
+                <i class="iconfontEditor icon-save"></i>
+            </div>
+        </div>
+    </div>
+    <div class="rightPanel-form" id="rightPanelForm"></div>
+</div>
+<div class="centerContainer">
+    <div class="canvasPaint" id="canvasPaint"></div>
+</div>
+<script type="text/html" id="toolsbarTemp">
+    <div>
+        <ul>
+            <li class="item setTransformY180" code='undo' data-tippy-content="撤销">
+                <i class="iconfontEditor icon-refresh"></i>
+            </li>
+            <li class="item" code='redo' data-tippy-content="重做">
+                <i class="iconfontEditor icon-refresh"></i>
+            </li>
+            <li class="item" code='zoomOut' data-tippy-content="放大">
+                <i class="iconfontEditor icon-zoom-out"></i>
+            </li>
+            <li class="item" code='zoomIn' data-tippy-content="缩小">
+                <i class="iconfontEditor icon-zoom-in"></i>
+            </li>
+            <li class="item" code='预览' data-tippy-content="预览">
+                <i class="iconfontEditor icon-electronics"></i>
+            </li>
+            <li class="item" code='save' data-tippy-content="保存">
+                <i class="iconfontEditor icon-save"></i>
+            </li>
+            <li class="item" code='remove' data-tippy-content="删除">
+                <i class="iconfontEditor icon-ashbin"></i>
+            </li>
+        </ul>
+        <div id="searchWrap">
+            <input type="text" placeholder="请输入物理编码" class="ht-searchInput" id="searchInput">
+            <a class="ht-searchBtn" id="searchBtn">搜索</a>
+        </div>
+    </div>
+</script>
+<script src="lib/Sortable-1.14.0/Sortable.min.js"></script>
+<script src="lib/tippy-6.3.1/popper.min.js"></script>
+<script src="lib/tippy-6.3.1/tippy-bundle.umd.min.js"></script>
+<script src="lib/simplebar-simplebar-5.3.3/dist/simplebar.js"></script>
+<script src="lib/flatpickr/dist/flatpickr.js"></script>
+<script src="lib/flatpickr/src/flatpickr.l10n.zh.js"></script>
+<script src="lib/createForm/createForm.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.js"></script>
+<script src="lib/antv/g6-4.2.7/g6.min.js"></script>
+<script src="https://www.layuicdn.com/layui/layui.js"></script>
+<script src="bimFlowJSON.js"></script>
+<script src="dist/js/component/behaviorDragAddEdge.js"></script>
+<script src="dist/js/component/behaviorHover.js"></script>
+<!--<script src="dist/js/component/behaviorClickNodeImage.js"></script>-->
+<script src="dist/js/component/behaviorClickNode.js"></script>
+<script src="dist/js/component/registerNodeImage.js"></script>
+<script src="configData/dataPower.js"></script>
+<script src="configData/locationData.js"></script>
+<script src="dist/js/dataModel.js"></script>
+<script src="dist/js/main.js"></script>
+</body>
+</html>

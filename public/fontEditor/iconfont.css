@@ -1,0 +1,55 @@
+@font-face {
+  font-family: "iconfonEditor"; /* Project id 2826606 */
+  src: url('iconfont.woff2?t=1632286782051') format('woff2'),
+       url('iconfont.woff?t=1632286782051') format('woff'),
+       url('iconfont.ttf?t=1632286782051') format('truetype');
+}
+
+.iconfontEditor {
+  font-family: "iconfonEditor" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-biaojuxinxi:before {
+  content: "\e600";
+}
+
+.icon-browse:before {
+  content: "\e666";
+}
+
+.icon-eye-close:before {
+  content: "\e66f";
+}
+
+.icon-link:before {
+  content: "\e676";
+}
+
+.icon-ashbin:before {
+  content: "\e665";
+}
+
+.icon-electronics:before {
+  content: "\e66e";
+}
+
+.icon-refresh:before {
+  content: "\e67b";
+}
+
+.icon-save:before {
+  content: "\e67c";
+}
+
+.icon-zoom-in:before {
+  content: "\e683";
+}
+
+.icon-zoom-out:before {
+  content: "\e684";
+}
+
