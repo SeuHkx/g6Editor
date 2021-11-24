@@ -272,9 +272,9 @@ G6.registerNode(
                 //冷却塔外壳
                 attrs: {
                     x: -cfg.size[0] / 4 - (cfg.size[0] / 50) * 3,
-                    y: -cfg.size[1] / 4 + cfg.size[0] / 100,
-                    height: cfg.size[0] / 2,
-                    width : cfg.size[1] / 2 + cfg.size[1] / 10,
+                    y: -cfg.size[1] / 4 + cfg.size[1] / 100,
+                    height: cfg.size[1] / 2,
+                    width : cfg.size[0] / 2 + cfg.size[0] / 10,
                     img: cfg.img[0],
                 },
                 name: 'image-content',
@@ -394,7 +394,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:0,
-                    y:style.height/2 - 3
+                    y:style.height/2 - 3,
+                    cursor:'ns-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -428,31 +429,68 @@ G6.registerNode(
                 className:'control-point',
                 name:"right-center"
             });
-            console.log('points')
         },
         update:function (cfg, item) {
             const model = item.getModel();
             const group = item.getContainer();
             const nodes = group.get('children');
             const {width,height} = model.style;
+            const controlPointsUpdateDirection = this.controlPointsUpdateDirection();
             //控制点不一样的时候 方向不一样
-            //向下拖拽 y为原来的坐标点 x不更新 比如 y:-55
-            //向上拖拽 y为原来的坐标点绝对值|55| + 动态变化的高度 y:-height+55
+            //拖拽bottom-center y为原来的坐标点或者更新过后的坐标点 x不更新 比如 y:-55
+            //拖拽top-center y为原来的坐标点绝对值|55| + 动态变化的高度 y:-height+55
             nodes.forEach(function (node) {
                 if(node.cfg.name === 'image-box'){
-                    node.attr({
-                        // width,
-                        height,
-                        y:-55
-                    });
+                    if(model.direction.name === 'top-center'){
+                        let absY = Math.abs(node.cfg.attrs.y);
+                        console.log('y',-height + absY,absY,node.attr('y'),model.recordPoint.pointBC);
+                        if(model.direction.position === 'up' || model.direction.position === 'down'){
+                            node.attr({
+                                height,
+                                y:-height + absY
+                            });
+                        }
+                        console.log('top',-height + absY ,-height + absY + model.recordPoint.pointBC)
+                    }
+                    if(model.direction.name === 'bottom-center'){
+                        let absY = Math.abs(node.attr('y'));
+                        if(model.direction.position === 'up' || model.direction.position === 'down'){
+                            node.attr({
+                                height,
+                                y:-absY
+                            });
+                        }
+                        console.log('bottom',height)
+                    }
+                    // node.attr({
+                    //     width,
+                    //     height,
+                    //     x:-width/2,
+                    //     y:-height/2
+                    // });
                 }
                 if(node.cfg.name === 'image-content'){
-                    node.attr({
-                        x: -width / 4 - (width / 50) * 3,
-                        y: -height/ 4 +  width / 100,
-                        height: width / 2,
-                        width : height / 2 + height / 10,
-                    });
+                    let diffHeight = model.size[1] - node.cfg.attrs.height;
+                    let absY = Math.abs(node.attr('y'));
+                    if(model.direction.name === 'bottom-center'){
+                        // node.attr({
+                        //     height:height - diffHeight,
+                        //     y:absY - diffHeight
+                        // });
+                    }
+                    if(model.direction.name === 'top-center'){
+                        // node.attr({
+                        //     height:height - diffHeight,
+                        //     y:-height/2 + diffHeight
+                        // });
+                    }
+
+                    // node.attr({
+                    //     x: -width / 4 - (width / 50) * 3,
+                    //     y: -height/ 4 +  width / 100,
+                    //     height: width / 2,
+                    //     width : height / 2 + height / 10,
+                    // });
                 }
                 if(node.cfg.name === 'image-content-part'){
                     node.attr({
@@ -465,57 +503,125 @@ G6.registerNode(
                 if(node.cfg.className === 'control-point'){
                     switch (node.cfg.name) {
                         case 'top-center':
-                            node.attr({
-                                y:-height/2 - 3,
-                            });
+                            if(model.direction.name === 'top-center'){
+                                controlPointsUpdateDirection.topCenter(node,model);
+                            }
+                            // if(model.direction.name === 'bottom-center'){
+                            //     controlPointsUpdateDirection.bottomCenter(node,model);
+                            // }
+                            // node.attr({
+                            //     y:-height/2 - 3,
+                            // });
                             break;
                         case 'top-left':
-                            node.attr({
-                                x:-width /2 - 3,
-                                y:-height/2 - 3
-                            });
+                            if(model.direction.name === 'top-center'){
+                                controlPointsUpdateDirection.topCenter(node,model);
+                            }
+                            // if(model.direction.name === 'bottom-center'){
+                            //     controlPointsUpdateDirection.bottomCenter(node,model);
+                            // }
+                            // node.attr({
+                            //     x:-width /2 - 3,
+                            //     y:-height/2 - 3
+                            // });
                             break;
                         case 'top-right':
-                            node.attr({
-                                x:width /2  - 3,
-                                y:-height/2 - 3
-                            });
+                            if(model.direction.name === 'top-center'){
+                                controlPointsUpdateDirection.topCenter(node,model);
+                            }
+                            // if(model.direction.name === 'bottom-center'){
+                            //     controlPointsUpdateDirection.bottomCenter(node,model);
+                            // }
+                            // node.attr({
+                            //     x:width /2  - 3,
+                            //     y:-height/2 - 3
+                            // });
                             break;
                         case 'bottom-center':
-                            node.attr({
-                                x:0,
-                                y:height/2 - 3
-                            });
+                            if(model.direction.name === 'bottom-center'){
+                                controlPointsUpdateDirection.bottomCenter(node,model);
+                            }
+                            // node.attr({
+                            //     x:0,
+                            //     y:height/2 - 3
+                            // });
                             break;
                         case 'bottom-left':
-                            node.attr({
-                                x:-width /2 - 3,
-                                y: height/2 - 3
-                            });
+                            if(model.direction.name === 'bottom-center'){
+                                controlPointsUpdateDirection.bottomCenter(node,model);
+                            }
+                            // node.attr({
+                            //     x:-width /2 - 3,
+                            //     y: height/2 - 3
+                            // });
                             break;
                         case 'bottom-right':
-                            node.attr({
-                                x:width /2 - 3,
-                                y:height/2 - 3
-                            });
+                            if(model.direction.name === 'bottom-center'){
+                                controlPointsUpdateDirection.bottomCenter(node,model);
+                            }
+                            // node.attr({
+                            //     x:width /2 - 3,
+                            //     y:height/2 - 3
+                            // });
                             break;
                         case 'left-center':
-                            node.attr({
-                                x:-width /2 - 3,
-                                y:0
-                            });
+                            if(model.direction.name === 'top-center'){
+                                controlPointsUpdateDirection.topCenter(node,model,true);
+                            }
+                            // if(model.direction.name === 'bottom-center'){
+                            //     controlPointsUpdateDirection.bottomCenter(node,model,true);
+                            // }
+                            // node.attr({
+                            //     x:-width /2 - 3,
+                            //     y:0
+                            // });
                             break;
                         case 'right-center':
-                            node.attr({
-                                x:width /2 - 3,
-                                y:0
-                            });
+                            if(model.direction.name === 'top-center'){
+                                controlPointsUpdateDirection.topCenter(node,model,true);
+                            }
+                            // if(model.direction.name === 'bottom-center'){
+                            //     controlPointsUpdateDirection.bottomCenter(node,model,true);
+                            // }
+                            // node.attr({
+                            //     x:width /2 - 3,
+                            //     y:0
+                            // });
                             break;
-
                     }
                 }
             });
-            console.log('update',width,height,nodes);
+            //console.log('update',width,height,nodes);
+        },
+        controlPointsUpdateDirection(){
+            let topCenter = function (node,model,center) {
+                let height = model.style.height;
+                let absY = Math.abs(model.size[1]/2);
+                let pointY = center?-height/2 + absY:-height  + absY - 3;
+                if(model.direction.position === 'up' || model.direction.position === 'down'){
+                    node.attr({
+                        y:pointY
+                    });
+                }
+            };
+            let bottomCenter = function (node,model,center) {
+                let pointY = node.attr('y');
+                pointY += model.point.y;
+                model.recordPoint.pointBC = pointY;
+                //let absY = Math.abs(model.size[1]/2);
+                // console.log("y",node.attr('y'))
+                // console.log("y--",model.style.height - absY -3)
+                //let pointY = center?model.style.height/2 - absY:model.style.height - absY -3;
+                if(model.direction.position === 'up' || model.direction.position === 'down'){
+                    node.attr({
+                        y:pointY
+                    });
+                }
+            };
+            return {
+                topCenter:topCenter,
+                bottomCenter:bottomCenter
+            }
         }
     },
     'rect'
