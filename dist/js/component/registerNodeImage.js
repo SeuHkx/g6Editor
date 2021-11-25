@@ -338,7 +338,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:-style.width /2 - 3,
-                    y:-style.height/2 - 3
+                    y:-style.height/2 - 3,
+                    cursor:'nw-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -352,7 +353,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:style.width /2  - 3,
-                    y:-style.height/2 - 3
+                    y:-style.height/2 - 3,
+                    cursor:'ne-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -366,7 +368,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:style.width /2 - 3,
-                    y:style.height/2 - 3
+                    y:style.height/2 - 3,
+                    cursor:'se-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -380,7 +383,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:-style.width /2 - 3,
-                    y:style.height/2 - 3
+                    y:style.height/2 - 3,
+                    cursor:'sw-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -409,7 +413,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:-style.width /2 - 3,
-                    y:0
+                    y:-3,
+                    cursor:'ew-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -423,7 +428,8 @@ G6.registerNode(
                     width:6,
                     height:6,
                     x:style.width /2 - 3,
-                    y:0
+                    y:-3,
+                    cursor:'ew-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -441,18 +447,30 @@ G6.registerNode(
             //拖拽top-center y为原来的坐标点绝对值|55| + 动态变化的高度 y:-height+55
             nodes.forEach(function (node) {
                 if(node.cfg.name === 'image-box'){
+                    //当拖动的控制点为top-center时候
                     if(model.direction.name === 'top-center'){
+                        //获取当前节点的y轴的绝对值静态坐标
                         let absY = Math.abs(node.cfg.attrs.y);
-                        console.log('y',-height + absY,absY,node.attr('y'),model.recordPoint.pointBC);
                         if(model.direction.position === 'up' || model.direction.position === 'down'){
+                            //当第一次拖动的时候，model.recordPoint.pointBC为0
+                            //不是第一次的时候，model.recordPoint.pointBC为拖动底部控制点移动的相对的距离
                             node.attr({
                                 height,
-                                y:-height + absY
+                                y:-height + absY + model.recordPoint.pointBC
                             });
                         }
-                        console.log('top',-height + absY ,-height + absY + model.recordPoint.pointBC)
+                    }
+                    if(model.direction.name === 'left-center'){
+                        let absX = Math.abs(node.cfg.attrs.x);
+                        if(model.direction.position === 'left' || model.direction.position === 'right'){
+                            node.attr({
+                                width,
+                                x:-width + absX //+recordPoint
+                            });
+                        }
                     }
                     if(model.direction.name === 'bottom-center'){
+                        //动态获取的y轴坐标点
                         let absY = Math.abs(node.attr('y'));
                         if(model.direction.position === 'up' || model.direction.position === 'down'){
                             node.attr({
@@ -460,7 +478,15 @@ G6.registerNode(
                                 y:-absY
                             });
                         }
-                        console.log('bottom',height)
+                    }
+                    if(model.direction.name === 'right-center'){
+                        let absX = Math.abs(node.attr('x'));
+                        if(model.direction.position === 'right' || model.direction.position === 'left'){
+                            node.attr({
+                                width,
+                                x:-absX
+                            });
+                        }
                     }
                     // node.attr({
                     //     width,
@@ -471,18 +497,24 @@ G6.registerNode(
                 }
                 if(node.cfg.name === 'image-content'){
                     let diffHeight = model.size[1] - node.cfg.attrs.height;
-                    let absY = Math.abs(node.attr('y'));
+                    let diffWidth  = model.size[0] - node.cfg.attrs.width;
                     if(model.direction.name === 'bottom-center'){
-                        // node.attr({
-                        //     height:height - diffHeight,
-                        //     y:absY - diffHeight
-                        // });
+                        node.attr({
+                            height:height - diffHeight,
+                        });
+                    }
+                    if(model.direction.name === 'right-center'){
+                        node.attr({
+                            width:width - diffWidth,
+                        });
                     }
                     if(model.direction.name === 'top-center'){
-                        // node.attr({
-                        //     height:height - diffHeight,
-                        //     y:-height/2 + diffHeight
-                        // });
+                        let absY = node.cfg.attrs.y;
+                        console.log('imgContent y',absY);
+                        node.attr({
+                            height:height - diffHeight,
+                            y:absY + model.recordPoint.pointTC + 3 //多减了一个点的像素 所以要加3
+                        });
                     }
 
                     // node.attr({
@@ -506,9 +538,6 @@ G6.registerNode(
                             if(model.direction.name === 'top-center'){
                                 controlPointsUpdateDirection.topCenter(node,model);
                             }
-                            // if(model.direction.name === 'bottom-center'){
-                            //     controlPointsUpdateDirection.bottomCenter(node,model);
-                            // }
                             // node.attr({
                             //     y:-height/2 - 3,
                             // });
@@ -565,24 +594,18 @@ G6.registerNode(
                             // });
                             break;
                         case 'left-center':
-                            if(model.direction.name === 'top-center'){
+                            if(model.direction.name === 'top-center'||model.direction.name === 'bottom-center'){
                                 controlPointsUpdateDirection.topCenter(node,model,true);
                             }
-                            // if(model.direction.name === 'bottom-center'){
-                            //     controlPointsUpdateDirection.bottomCenter(node,model,true);
-                            // }
                             // node.attr({
                             //     x:-width /2 - 3,
                             //     y:0
                             // });
                             break;
                         case 'right-center':
-                            if(model.direction.name === 'top-center'){
+                            if(model.direction.name === 'top-center'|| model.direction.name === 'bottom-center'){
                                 controlPointsUpdateDirection.topCenter(node,model,true);
                             }
-                            // if(model.direction.name === 'bottom-center'){
-                            //     controlPointsUpdateDirection.bottomCenter(node,model,true);
-                            // }
                             // node.attr({
                             //     x:width /2 - 3,
                             //     y:0
@@ -594,24 +617,41 @@ G6.registerNode(
             //console.log('update',width,height,nodes);
         },
         controlPointsUpdateDirection(){
+            //更新对应顶部控制的中心点坐标
             let topCenter = function (node,model,center) {
                 let height = model.style.height;
+                //获取静态绝对坐标点 例如只有Y 就获取Y
                 let absY = Math.abs(model.size[1]/2);
-                let pointY = center?-height/2 + absY:-height  + absY - 3;
+                let pointY = 0;
+                //通过参数判断 是否是两侧中心点的坐标
+                if(center){
+                    //关于model.recordPoint 初始化为0
+                    //-3 是控制点大小的一半
+                    //有两种情况
+                    //1.当首次拖动顶部的控制点的时候，model.recordPoint.pointBC为0 不参与中心点的计算
+                    //2.当不是第一次拖动顶部的控制点的时候，model.recordPoint.pointBC不为0，参与中心点的实时计算，值对应的是拖动底部的控制点移动的距离
+                    pointY = -height/2 + absY + model.recordPoint.pointBC - 3;
+                }else{
+                    //关于model.recordPoint.pointTC 为控制点移动的距离 参与图形大小 y轴动态改变的计算
+                    pointY = -height + absY + model.recordPoint.pointBC - 3;
+                    model.recordPoint.pointTC = absY + pointY;
+                }
                 if(model.direction.position === 'up' || model.direction.position === 'down'){
                     node.attr({
                         y:pointY
                     });
                 }
             };
-            let bottomCenter = function (node,model,center) {
+            //更新对应底部控制的中心点坐标
+            let bottomCenter = function (node,model) {
+                //获取静态绝对坐标点 例如只有Y 就获取Y -3是减去控制点大小的一半
+                let absStaticPointY = Math.abs(model.size[1]/2) - 3;
+                //获取动态的y轴坐标点
                 let pointY = node.attr('y');
+                //通过自身叠加的移动的距离
                 pointY += model.point.y;
-                model.recordPoint.pointBC = pointY;
-                //let absY = Math.abs(model.size[1]/2);
-                // console.log("y",node.attr('y'))
-                // console.log("y--",model.style.height - absY -3)
-                //let pointY = center?model.style.height/2 - absY:model.style.height - absY -3;
+                //model.recordPoint.pointBC为缓存 点移动的相对中心点的距离
+                model.recordPoint.pointBC = pointY - absStaticPointY;
                 if(model.direction.position === 'up' || model.direction.position === 'down'){
                     node.attr({
                         y:pointY

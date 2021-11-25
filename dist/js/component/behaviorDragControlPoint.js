@@ -27,7 +27,10 @@ const dragControlPoint = {
             let direction = target.get('name');
             let model = item.getModel();
             if(!model.recordPoint){
-                model.recordPoint = {};
+                model.recordPoint = {
+                    pointBC:0,
+                    pointTC:0
+                };
             }
             this.point.x = evt.x;
             this.point.y = evt.y;
@@ -35,9 +38,6 @@ const dragControlPoint = {
             this.cachePoint.y = evt.y;
             this.dragState = true;
             this.direction.name = direction;
-            if(direction === 'bottom-center'){
-                model.recordPoint.pointBC = 0;
-            }
         }
     },
     handleMouseMove(evt){
@@ -51,6 +51,7 @@ const dragControlPoint = {
                 y:0
             };
             let diffY = evt.y - this.point.y;
+            let diffX = evt.x - this.point.x;
             if(this.direction.name === 'top-center'){
                 if(diffY > 0){
                     point.y = - (evt.y - this.cachePoint.y);
@@ -62,6 +63,15 @@ const dragControlPoint = {
                     // console.log('top up');
                 }
             }
+            if(this.direction.name === 'left-center'){
+                if(diffX > 0){
+                    point.x = -(evt.x - this.cachePoint.x);
+                    this.direction.position = 'right';
+                }else if(diffX < 0){
+                    point.x = this.cachePoint.x - evt.x;
+                    this.direction.position = 'left';
+                }
+            }
             if(this.direction.name === 'bottom-center'){
                 if(diffY < 0){
                     point.y = (evt.y - this.cachePoint.y);
@@ -69,6 +79,15 @@ const dragControlPoint = {
                 }else if(diffY > 0){
                     point.y = -(this.cachePoint.y - evt.y);
                     this.direction.position = 'down';
+                }
+            }
+            if(this.direction.name === 'right-center'){
+                if(diffX > 0){
+                    point.x = (evt.x - this.cachePoint.x);
+                    this.direction.position = 'right';
+                }else if(diffX < 0){
+                    point.x = -(this.cachePoint.x - evt.x);
+                    this.direction.position = 'left';
                 }
             }
             this.cachePoint.y = evt.y;
