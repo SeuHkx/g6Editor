@@ -310,9 +310,9 @@ G6.registerNode(
             //         easing: 'easeLinear',
             //     }
             // );
-            // img.pauseAnimate();暂停
-            // img.resumeAnimate();启用
-            // img.isAnimatePaused();
+            // image.pauseAnimate();
+            // image.resumeAnimate();
+            // image.isAnimatePaused();
         },
         addControlPoints(group,style){
             group.addShape('rect',{
@@ -469,22 +469,18 @@ G6.registerNode(
                             });
                         }
                     }
+                    //根据坐标的原则 底部和右侧的拖动 不需要改变坐标点
                     if(model.direction.name === 'bottom-center'){
-                        //动态获取的y轴坐标点
-                        let absY = Math.abs(node.attr('y'));
                         if(model.direction.position === 'up' || model.direction.position === 'down'){
                             node.attr({
-                                height,
-                                y:-absY
+                                height
                             });
                         }
                     }
                     if(model.direction.name === 'right-center'){
-                        let absX = Math.abs(node.attr('x'));
                         if(model.direction.position === 'right' || model.direction.position === 'left'){
                             node.attr({
-                                width,
-                                x:-absX
+                                width
                             });
                         }
                     }
@@ -496,6 +492,7 @@ G6.registerNode(
                     // });
                 }
                 if(node.cfg.name === 'image-content'){
+                    //获取图元的大小内间距
                     let diffHeight = model.size[1] - node.cfg.attrs.height;
                     let diffWidth  = model.size[0] - node.cfg.attrs.width;
                     if(model.direction.name === 'bottom-center'){
@@ -525,12 +522,12 @@ G6.registerNode(
                     // });
                 }
                 if(node.cfg.name === 'image-content-part'){
-                    node.attr({
-                        x: -width / 2,
-                        y: -height + height/50*9,
-                        height,
-                        width,
-                    })
+                    // node.attr({
+                    //     x: -width / 2,
+                    //     y: -height + height/50*9,
+                    //     height,
+                    //     width,
+                    // })
                 }
                 if(node.cfg.className === 'control-point'){
                     switch (node.cfg.name) {
