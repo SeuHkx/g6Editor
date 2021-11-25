@@ -12,24 +12,8 @@ const clickNodeImageBehavior = {
             const clickNodes = graph.findAllByState('node', 'click');
             clickNodes.forEach((n) => {
                 graph.setItemState(n, 'click', false);
-                // n.update({
-                //     linkPoints: {
-                //         top: false,
-                //         right: false,
-                //         bottom: false,
-                //         left: false,
-                //     },
-                // });
             });
             graph.setItemState(nodeItem, 'click', true);
-            // nodeItem.update({
-            //     linkPoints: {
-            //         top: true,
-            //         right: true,
-            //         bottom: true,
-            //         left: true
-            //     }
-            // });
             dataModel.comp.rightPanelControl.show(function (el) {
                 let loadFormEl = el.querySelector('#rightPanelForm');
                 let nodeModel = nodeItem.getModel();
@@ -51,11 +35,6 @@ const clickNodeImageBehavior = {
                                 }else{
                                     model.props[name] = val;
                                 }
-                                //todo
-                                nodeModel.style.width?nodeModel.style.width  += 5:nodeModel.style.width = nodeModel.size[0] + 5;
-                                nodeModel.style.height?nodeModel.style.height+= 5:nodeModel.style.height= nodeModel.size[1] + 5;
-                                nodeModel.size[0] = nodeModel.style.width;
-                                nodeModel.size[1] = nodeModel.style.height;
                                 graph.updateItem(nodeItem,model,true);
                             });
                         }},
@@ -75,14 +54,6 @@ const clickNodeImageBehavior = {
         const clickNodes = graph.findAllByState('node', 'click');
         clickNodes.forEach((n) => {
             graph.setItemState(n, 'click', false);
-            // n.update({
-            //     linkPoints: {
-            //         top: false,
-            //         right: false,
-            //         bottom: false,
-            //         left: false,
-            //     },
-            // });
         });
         dataModel.comp.rightPanelControl.hide(function (el) {
             let loadFormEl = el.querySelector('#rightPanelForm');

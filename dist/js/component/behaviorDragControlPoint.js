@@ -28,8 +28,10 @@ const dragControlPoint = {
             let model = item.getModel();
             if(!model.recordPoint){
                 model.recordPoint = {
+                    pointTC:0,
+                    pointRC:0,
                     pointBC:0,
-                    pointTC:0
+                    pointLC:0
                 };
             }
             this.point.x = evt.x;
