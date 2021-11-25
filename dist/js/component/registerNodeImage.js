@@ -271,10 +271,10 @@ G6.registerNode(
             group.addShape('image', {
                 //冷却塔外壳
                 attrs: {
-                    x: -cfg.size[0] / 4 - (cfg.size[0] / 50) * 3,
-                    y: -cfg.size[1] / 4 + cfg.size[1] / 100,
-                    height: cfg.size[1] / 2,
-                    width : cfg.size[0] / 2 + cfg.size[0] / 10,
+                    x: -(cfg.size[0] - 10)/ 2 ,
+                    y: -(cfg.size[1] - 20)/ 2 ,
+                    height: cfg.size[1] - 20,
+                    width : cfg.size[0] - 10 ,
                     img: cfg.img[0],
                 },
                 name: 'image-content',
