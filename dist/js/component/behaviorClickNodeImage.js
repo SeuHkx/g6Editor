@@ -35,6 +35,7 @@ const clickNodeImageBehavior = {
                                 }else{
                                     model.props[name] = val;
                                 }
+                                console.log(model);
                                 graph.updateItem(nodeItem,model,true);
                             });
                         }},

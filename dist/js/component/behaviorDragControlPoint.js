@@ -12,6 +12,11 @@ const dragControlPoint = {
         position:''
     },
     dragState:false,
+    dragRotation:false,
+    pointRotate:{
+        x:0,
+        y:0
+    },
     point:{
         x:0,
         y:0
@@ -23,6 +28,11 @@ const dragControlPoint = {
     handleNodeMouseDown(evt){
         const { target , item} = evt;
         this.currentItem = item;
+        if(target.cfg.className === 'rotate-point'){
+            this.dragRotation = true;
+            this.pointRotate.x = evt.x;
+            this.pointRotate.y = evt.y;
+        }
         if(target.cfg.className === 'control-point'){
             let direction = target.get('name');
             let model = item.getModel();
@@ -47,6 +57,17 @@ const dragControlPoint = {
         // if(target.cfg.className === 'control-point'){
         //
         // }
+        if(this.dragRotation){
+            let point = {
+                x:0,
+                y:0
+            };
+            point.x = evt.x - this.pointRotate.x;
+            point.y = evt.y - this.pointRotate.y;
+            this.pointRotate.x = evt.x;
+            this.pointRotate.y = evt.y;
+            this.updateNodeSize(this.currentItem,point);
+        }
         if(this.dragState){
             let point = {
                 x:0,
@@ -98,18 +119,31 @@ const dragControlPoint = {
         }
     },
     handleMouseUp(){
+        if(this.currentItem){
+            let model = this.currentItem.getModel();
+            delete model.direction;
+            delete model.dragRotation;
+        }
         this.dragState = false;
+        this.dragRotation = false;
         this.currentItem = null;
     },
     updateNodeSize(item,point){
         let model = item.getModel();
-        //todo
-        model.style.width ?model.style.width += point.x:model.style.width = model.size[0] + point.x;
-        model.style.height?model.style.height+= point.y:model.style.height= model.size[1] + point.y;
-        // model.size[0] = model.style.width;
-        // model.size[1] = model.style.height;
-        model.direction = this.direction;
-        model.point = point;
+        if(this.dragState){
+            model.style.width ?model.style.width += point.x:model.style.width = model.size[0] + point.x;
+            model.style.height?model.style.height+= point.y:model.style.height= model.size[1] + point.y;
+            model.direction = this.direction;
+            model.point = point;
+        }
+        if(this.dragRotation){
+            //let angle = (Math.atan2((point.y - 0), (point.x - 0))) * (180 / Math.PI);
+            model.dragRotation = this.dragRotation;
+            //model.style.angle ? model.style.angle += point.x:model.style.angle = point.x;
+            //let angle = (Math.PI / 180)*model.style.angle;
+            model.style.angle = 1;
+            //console.log(angle);
+        }
         this.graph.updateItem(item,model,true);
     }
 };

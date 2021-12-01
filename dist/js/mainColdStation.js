@@ -3,148 +3,148 @@ window.onload = function () {
     let data = {
         nodes: []
     };
-    let convertDataColdStation = function(data){
-        let deviceTypeMap = {
-            112:{
-                type:'boxImage',
-                size:[125,125],
-                imgSize:[125,80],
-                img: "public/images/panel/暖通设备svg/冷水机.svg"
-            },
-            132:{
-                type:'boxImage-pump',
-                size:[65,65],
-                img: [
-                    "public/images/panel/冷冻泵(左).svg",
-                    "public/images/panel/冷冻泵(扇叶).svg"
-                ]
-            },
-            134:{
-                type:"boxImage-pump",
-                size:[65,65],
-                img: [
-                    "public/images/panel/冷却泵(左).svg",
-                    "public/images/panel/冷却泵(扇叶).svg"
-                ]
-            },
-            114:{
-                type:"boxImage-tower",
-                size:[110,110],
-                img: [
-                    "public/images/panel/冷却塔.svg",
-                    "public/images/panel/冷却塔(蒸汽).svg"
-                ]
-            },
-            140:{
-                type:"boxImage",
-                size:[65,65],
-                imgSize:[35,20],
-                img: "public/images/panel/暖通设备svg/电动阀.svg"
-            },
-            144:{
-                type:"boxImage-plate",
-                size:[100,120],
-                img: [
-                    "public/images/panel/板换.svg",
-                    "public/images/panel/板换(蒸汽).svg"
-                ]
-            },
-            145:{
-                type:"boxImage",
-                size:[100,55],
-                img: "public/images/panel/暖通设备svg/分水器.svg"
-            },
-            146:{
-                type:"boxImage",
-                size:[100,55],
-                img: "public/images/panel/暖通设备svg/集水器.svg"
-            },
-            231:{
-                type:"boxImage",
-                size:[100,100],
-                imgSize:[75,60],
-                img: "public/images/panel/暖通设备svg/水池.svg"
-            },
-            230:{
-                type:"boxImage",
-                size:[100,100],
-                imgSize:[100,60],
-                img: "public/images/panel/暖通设备svg/蓄冷罐.svg"
-            },
-            "011":{
-                type:"boxImage",
-                size:[75,75],
-                imgSize:[60,20],
-                img: "public/images/panel/暖通设备svg/压力传感器.svg"
-            },
-            "010":{
-                type:"boxImage",
-                size:[75,75],
-                imgSize:[60,20],
-                img: "public/images/panel/暖通设备svg/温度传感器.svg"
-            },
-            183:{
-                type:"boxImage",
-                size:[75,75],
-                imgSize:[60,28],
-                img: "public/images/panel/暖通设备svg/流量计.svg"
-            },
-            142:{
-                type:"boxImage",
-                size:[50,50],
-                imgSize:[40,40],
-                img: "public/images/panel/暖通设备svg/冷冻供水管-L型1.svg"
-            },
-            141:{
-                type:"boxImage",
-                size:[50,50],
-                imgSize:[40,40],
-                img: "public/images/panel/暖通设备svg/冷冻供水管-T型4.svg"
-            },
-            143:{
-                type:"boxImage",
-                size:[50,50],
-                imgSize:[40,34],
-                img: "public/images/panel/暖通设备svg/冷冻供水管-水平型.svg"
-            },
-            10000:{
-                type:"rect",
-                size:[40,15]
-            }
-        };
-        let nodes = [];
-        if (!Array.isArray(data)) return;
-        data.forEach(function (d) {
-            let model = {props: {}};
-            model.id = d.i + '';
-            model.x = d.p.position.x;
-            model.y = d.p.position.y;
-            if(d.a.deviceType !== '142' && d.a.deviceType !== '141' && d.a.deviceType !== '143'){
-                for(let k in deviceTypeMap[d.a.deviceType]){
-                    model[k] = deviceTypeMap[d.a.deviceType][k];
-                }
-                if(d.a.deviceType === '10000'){
-                    model.style = {
-                        stroke: '#168DF8',
-                        lineWidth: 1,
-                        fill: '#168DF8',
-                        color:'#fff'
-                    };
-                    model.labelCfg = {
-                        style: {
-                            fill: '#fff'
-                        }
-                    }
-                }
-                model.props = d.a;
-                nodes.push(model);
-            }
-
-        });
-        return nodes;
-    };
-    let dataColdStation = convertDataColdStation(bimRefrigeratingStationBIM.d);
-    data.nodes.push.apply(data.nodes, dataColdStation);
+    // let convertDataColdStation = function(data){
+    //     let deviceTypeMap = {
+    //         112:{
+    //             type:'boxImage',
+    //             size:[125,125],
+    //             imgSize:[125,80],
+    //             img: "public/images/panel/暖通设备svg/冷水机.svg"
+    //         },
+    //         132:{
+    //             type:'boxImage-pump',
+    //             size:[65,65],
+    //             img: [
+    //                 "public/images/panel/冷冻泵(左).svg",
+    //                 "public/images/panel/冷冻泵(扇叶).svg"
+    //             ]
+    //         },
+    //         134:{
+    //             type:"boxImage-pump",
+    //             size:[65,65],
+    //             img: [
+    //                 "public/images/panel/冷却泵(左).svg",
+    //                 "public/images/panel/冷却泵(扇叶).svg"
+    //             ]
+    //         },
+    //         114:{
+    //             type:"boxImage-tower",
+    //             size:[110,110],
+    //             img: [
+    //                 "public/images/panel/冷却塔.svg",
+    //                 "public/images/panel/冷却塔(蒸汽).svg"
+    //             ]
+    //         },
+    //         140:{
+    //             type:"boxImage",
+    //             size:[65,65],
+    //             imgSize:[35,20],
+    //             img: "public/images/panel/暖通设备svg/电动阀.svg"
+    //         },
+    //         144:{
+    //             type:"boxImage-plate",
+    //             size:[100,120],
+    //             img: [
+    //                 "public/images/panel/板换.svg",
+    //                 "public/images/panel/板换(蒸汽).svg"
+    //             ]
+    //         },
+    //         145:{
+    //             type:"boxImage",
+    //             size:[100,55],
+    //             img: "public/images/panel/暖通设备svg/分水器.svg"
+    //         },
+    //         146:{
+    //             type:"boxImage",
+    //             size:[100,55],
+    //             img: "public/images/panel/暖通设备svg/集水器.svg"
+    //         },
+    //         231:{
+    //             type:"boxImage",
+    //             size:[100,100],
+    //             imgSize:[75,60],
+    //             img: "public/images/panel/暖通设备svg/水池.svg"
+    //         },
+    //         230:{
+    //             type:"boxImage",
+    //             size:[100,100],
+    //             imgSize:[100,60],
+    //             img: "public/images/panel/暖通设备svg/蓄冷罐.svg"
+    //         },
+    //         "011":{
+    //             type:"boxImage",
+    //             size:[75,75],
+    //             imgSize:[60,20],
+    //             img: "public/images/panel/暖通设备svg/压力传感器.svg"
+    //         },
+    //         "010":{
+    //             type:"boxImage",
+    //             size:[75,75],
+    //             imgSize:[60,20],
+    //             img: "public/images/panel/暖通设备svg/温度传感器.svg"
+    //         },
+    //         183:{
+    //             type:"boxImage",
+    //             size:[75,75],
+    //             imgSize:[60,28],
+    //             img: "public/images/panel/暖通设备svg/流量计.svg"
+    //         },
+    //         142:{
+    //             type:"boxImage",
+    //             size:[50,50],
+    //             imgSize:[40,40],
+    //             img: "public/images/panel/暖通设备svg/冷冻供水管-L型1.svg"
+    //         },
+    //         141:{
+    //             type:"boxImage",
+    //             size:[50,50],
+    //             imgSize:[40,40],
+    //             img: "public/images/panel/暖通设备svg/冷冻供水管-T型4.svg"
+    //         },
+    //         143:{
+    //             type:"boxImage",
+    //             size:[50,50],
+    //             imgSize:[40,34],
+    //             img: "public/images/panel/暖通设备svg/冷冻供水管-水平型.svg"
+    //         },
+    //         10000:{
+    //             type:"rect",
+    //             size:[40,15]
+    //         }
+    //     };
+    //     let nodes = [];
+    //     if (!Array.isArray(data)) return;
+    //     data.forEach(function (d) {
+    //         let model = {props: {}};
+    //         model.id = d.i + '';
+    //         model.x = d.p.position.x;
+    //         model.y = d.p.position.y;
+    //         if(d.a.deviceType !== '142' && d.a.deviceType !== '141' && d.a.deviceType !== '143'){
+    //             for(let k in deviceTypeMap[d.a.deviceType]){
+    //                 model[k] = deviceTypeMap[d.a.deviceType][k];
+    //             }
+    //             if(d.a.deviceType === '10000'){
+    //                 model.style = {
+    //                     stroke: '#168DF8',
+    //                     lineWidth: 1,
+    //                     fill: '#168DF8',
+    //                     color:'#fff'
+    //                 };
+    //                 model.labelCfg = {
+    //                     style: {
+    //                         fill: '#fff'
+    //                     }
+    //                 }
+    //             }
+    //             model.props = d.a;
+    //             nodes.push(model);
+    //         }
+    //
+    //     });
+    //     return nodes;
+    // };
+    // let dataColdStation = convertDataColdStation(bimRefrigeratingStationBIM.d);
+    data.nodes.push.apply(data.nodes, bimRefrigeratingStationBIM.nodes);
     //定义面板数据
     let paletteData = {
         device: {
@@ -464,16 +464,16 @@ window.onload = function () {
     let rightPanelControl = function (id) {
         let el = document.querySelector(id);
         let panelShow = function (show) {
+            el.style.display = "block";
             if (typeof show === "function") {
                 show(el);
             }
-            el.style.display = "block";
         };
         let panelHide = function (hide) {
+            el.style.display = "none";
             if (typeof hide === "function") {
                 hide(el);
             }
-            el.style.display = "none";
         };
         return {
             show: panelShow,
@@ -559,7 +559,7 @@ window.onload = function () {
         // fitCenter: true,
         enabledStack: true,
         modes: {
-            default: ['drag-canvas', 'drag-node', 'zoom-canvas', 'clickNodeImage']
+            default: ['drag-canvas', 'drag-node', 'zoom-canvas', 'clickNodeImage','dragControlPoint']
         },
         defaultNode: {
             anchorPoints: [

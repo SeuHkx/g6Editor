@@ -220,7 +220,7 @@ G6.registerNode(
             // img.pauseAnimate();暂停
             // img.resumeAnimate();启用
             // img.isAnimatePaused();
-        },
+        }
     },
     'rect'
 );
@@ -241,7 +241,7 @@ G6.registerNode(
                     shape.attr('opacity', 0);
                 }
                 children.forEach(child =>{
-                    if(child.cfg.className === 'control-point'){
+                    if(child.cfg.className === 'control-point' || child.cfg.className === 'rotate-point'){
                         if(value){
                             child.show();
                         }else{
@@ -253,13 +253,15 @@ G6.registerNode(
         },
         draw(cfg, group){
             let style = this.getShapeStyle(cfg,group);
+            cfg.size[0] = style.width;
+            cfg.size[1] = style.height;
             let shape = group.addShape('rect', {
                 //外边框
                 attrs: {
-                    x: -cfg.size[0] / 2,
-                    y: -cfg.size[1] / 2,
-                    width: cfg.size[0],
-                    height: cfg.size[1],
+                    x: -style.width / 2,
+                    y: -style.height / 2,
+                    width :style.width,
+                    height:style.height,
                     fill: 'transparent',
                     stroke: '#168DF8',
                     radius: 0,
@@ -271,17 +273,54 @@ G6.registerNode(
             group.addShape('image', {
                 //冷却塔外壳
                 attrs: {
-                    x: -(cfg.size[0] - 10)/ 2 ,
-                    y: -(cfg.size[1] - 20)/ 2 ,
-                    height: cfg.size[1] - 20,
-                    width : cfg.size[0] - 10 ,
-                    img: cfg.img[0],
+                    x: -(style.width - 10)/ 2 ,
+                    y: -(style.height- 20)/ 2 ,
+                    height: style.height - 20,
+                    width : style.width - 10 ,
+                    img: cfg.img[0]
                 },
                 name: 'image-content',
                 draggable: true,
             });
+            this.addRotatePoint(group,style);
             this.addControlPoints(group,style);
+            let imgRotateState = function (group, item, angle) {
+                let itemPoint = {x:cfg.x,y:cfg.y};
+                let shapeMatrix = group.getMatrix();
+                if (!shapeMatrix) shapeMatrix = [1, 0, 0, 1, 0, 0, 0, 0, 1];
+                let center = [item.x, item.y];
+                let groupMatrix = Util.transform(shapeMatrix, [
+                    ['t', -center[0], -center[1]], // 先平移到旋转中心
+                    ['r', (Math.PI / 180) * angle], // 旋转 Math.PI / 3
+                    ['t', center[0], center[1]], // 平移回来
+                ]);
+                group.setMatrix(groupMatrix);
+            };
+            this.setShapeRotate(group,style);
             return shape;
+        },
+        setShapeRotate(group,style){
+            let nodes  = group.get('children');
+            if(style.angle){
+                nodes.forEach(function (node) {
+                    let center = [0,0];
+                    let matrix = node.getMatrix();
+                    // 图形或分组的初始矩阵时 null，为了避免变换一个 null 矩阵，需要将其初始化为单位矩阵
+                    if (!matrix){
+                        //[0.9335804264972025, 0.3583679495453005, 0, -0.3583679495453005, 0.9335804264972025, 0, 0, 0, 1]
+                        matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+                    }
+                    center[0] = matrix[0];
+                    center[1] = matrix[1];
+                    // 3*3 矩阵变换，用于二维渲染
+                    const newMatrix = Util.transform(matrix, [
+                        ['t', center[0], center[1]], // translate
+                        ['r', (Math.PI / 180)*style.angle],// rotate
+                        ['t', -center[0], -center[1]]// translate
+                    ]);
+                    node.setMatrix(newMatrix);
+                });
+            }
         },
         afterDraw(cfg, group) {
             const image = group.addShape('image', {
@@ -314,6 +353,22 @@ G6.registerNode(
             // image.resumeAnimate();
             // image.isAnimatePaused();
         },
+        addRotatePoint(group,style){
+            group.addShape('image',{
+               attrs:{
+                   stroke: '#168DF8',
+                   width:20,
+                   height:20,
+                   x:-10,
+                   y:(-style.height/2 - 10 ) - 30,
+                   img:'public/images/旋转.svg',
+                   cursor:'crosshair'
+               },
+                visible:false,
+                className:'rotate-point',
+                name:'top-center'
+            });
+        },
         addControlPoints(group,style){
             group.addShape('rect',{
                attrs:{
@@ -339,7 +394,7 @@ G6.registerNode(
                     height:6,
                     x:-style.width /2 - 3,
                     y:-style.height/2 - 3,
-                    cursor:'nw-resize'
+                    cursor:'nwse-resize '
                 },
                 visible:false,
                 className:'control-point',
@@ -354,7 +409,7 @@ G6.registerNode(
                     height:6,
                     x:style.width /2  - 3,
                     y:-style.height/2 - 3,
-                    cursor:'ne-resize'
+                    cursor:'nesw-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -369,7 +424,7 @@ G6.registerNode(
                     height:6,
                     x:style.width /2 - 3,
                     y:style.height/2 - 3,
-                    cursor:'se-resize'
+                    cursor:'nwse-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -384,7 +439,7 @@ G6.registerNode(
                     height:6,
                     x:-style.width /2 - 3,
                     y:style.height/2 - 3,
-                    cursor:'sw-resize'
+                    cursor:'nesw-resize'
                 },
                 visible:false,
                 className:'control-point',
@@ -445,209 +500,217 @@ G6.registerNode(
             //控制点不一样的时候 方向不一样
             //拖拽bottom-center y为原来的坐标点或者更新过后的坐标点 x不更新 比如 y:-55
             //拖拽top-center y为原来的坐标点绝对值|55| + 动态变化的高度 y:-height+55
-            nodes.forEach(function (node) {
-                if(node.cfg.name === 'image-box'){
-                    //当拖动的控制点为top-center时候
-                    if(model.direction.name === 'top-center'){
-                        //获取当前节点的y轴的绝对值静态坐标
-                        let absY = Math.abs(node.cfg.attrs.y);
-                        if(model.direction.position === 'up' || model.direction.position === 'down'){
-                            //当第一次拖动的时候，model.recordPoint.pointBC为0
-                            //不是第一次的时候，model.recordPoint.pointBC为拖动底部控制点移动的相对的距离
+            if(model.direction){
+                nodes.forEach(function (node) {
+                    if(node.cfg.name === 'image-box'){
+                        //当拖动的控制点为top-center时候
+                        if(model.direction.name === 'top-center'){
+                            //获取当前节点的y轴的绝对值静态坐标
+                            let absY = Math.abs(node.cfg.attrs.y);
+                            if(model.direction.position === 'up' || model.direction.position === 'down'){
+                                //当第一次拖动的时候，model.recordPoint.pointBC为0
+                                //不是第一次的时候，model.recordPoint.pointBC为拖动底部控制点移动的相对的距离
+                                node.attr({
+                                    height,
+                                    y:-height + absY + model.recordPoint.pointBC
+                                });
+                            }
+                        }
+                        if(model.direction.name === 'left-center'){
+                            let absX = Math.abs(node.cfg.attrs.x);
+                            if(model.direction.position === 'left' || model.direction.position === 'right'){
+                                node.attr({
+                                    width,
+                                    x:-width + absX + model.recordPoint.pointRC
+                                });
+                            }
+                        }
+                        //根据坐标的原则 底部和右侧的拖动 不需要改变坐标点
+                        if(model.direction.name === 'bottom-center'){
+                            if(model.direction.position === 'up' || model.direction.position === 'down'){
+                                node.attr({
+                                    height
+                                });
+                            }
+                        }
+                        if(model.direction.name === 'right-center'){
+                            if(model.direction.position === 'right' || model.direction.position === 'left'){
+                                node.attr({
+                                    width
+                                });
+                            }
+                        }
+                        // node.attr({
+                        //     width,
+                        //     height,
+                        //     x:-width/2,
+                        //     y:-height/2
+                        // });
+                    }
+                    if(node.cfg.name === 'image-content'){
+                        //获取图元的大小内间距
+                        let diffHeight = model.size[1] - node.cfg.attrs.height;
+                        let diffWidth  = model.size[0] - node.cfg.attrs.width;
+                        if(model.direction.name === 'bottom-center'){
                             node.attr({
-                                height,
-                                y:-height + absY + model.recordPoint.pointBC
+                                height:height - diffHeight
                             });
                         }
-                    }
-                    if(model.direction.name === 'left-center'){
-                        let absX = Math.abs(node.cfg.attrs.x);
-                        if(model.direction.position === 'left' || model.direction.position === 'right'){
+                        if(model.direction.name === 'right-center'){
                             node.attr({
-                                width,
-                                x:-width + absX + model.recordPoint.pointRC
+                                width:width - diffWidth,
                             });
                         }
-                    }
-                    //根据坐标的原则 底部和右侧的拖动 不需要改变坐标点
-                    if(model.direction.name === 'bottom-center'){
-                        if(model.direction.position === 'up' || model.direction.position === 'down'){
+                        if(model.direction.name === 'top-center'){
+                            let absY = node.cfg.attrs.y;
                             node.attr({
-                                height
+                                height:height - diffHeight,
+                                y:absY + model.recordPoint.pointTC + 3 //多减了一个点的像素 所以要加3
                             });
                         }
-                    }
-                    if(model.direction.name === 'right-center'){
-                        if(model.direction.position === 'right' || model.direction.position === 'left'){
+                        if(model.direction.name === 'left-center'){
+                            let absX = node.cfg.attrs.x;
                             node.attr({
-                                width
+                                width:width - diffWidth,
+                                x:absX + model.recordPoint.pointLC + 3 //多减了一个点的像素 所以要加3
                             });
                         }
+                        // node.attr({
+                        //     x: -width / 4 - (width / 50) * 3,
+                        //     y: -height/ 4 +  width / 100,
+                        //     height: width / 2,
+                        //     width : height / 2 + height / 10,
+                        // });
                     }
-                    // node.attr({
-                    //     width,
-                    //     height,
-                    //     x:-width/2,
-                    //     y:-height/2
-                    // });
-                }
-                if(node.cfg.name === 'image-content'){
-                    //获取图元的大小内间距
-                    let diffHeight = model.size[1] - node.cfg.attrs.height;
-                    let diffWidth  = model.size[0] - node.cfg.attrs.width;
-                    if(model.direction.name === 'bottom-center'){
+                    if(node.cfg.name === 'image-content-part'){
                         node.attr({
-                            height:height - diffHeight,
-                        });
+                            x: -width / 2,
+                            y: -height + height/50*9,
+                            height,
+                            width,
+                        })
                     }
-                    if(model.direction.name === 'right-center'){
-                        node.attr({
-                            width:width - diffWidth,
-                        });
+                    if(node.cfg.className === 'control-point'||node.cfg.className === 'rotate-point'){
+                        switch (node.cfg.name) {
+                            case 'top-center':
+                                if(model.direction.name === 'top-center'){
+                                    controlPointsUpdateDirection.topCenter(node,model);
+                                }
+                                if(model.direction.name === 'left-center'|| model.direction.name === 'right-center'){
+                                    controlPointsUpdateDirection.leftCenter(node,model,true);
+                                }
+                                // if(model.direction.name === 'right-center'){
+                                //     controlPointsUpdateDirection.rightCenter(node,model);
+                                //     console.log('2')
+                                // }
+                                // node.attr({
+                                //     y:-height/2 - 3,
+                                // });
+                                break;
+                            case 'top-left':
+                                if(model.direction.name === 'top-center'){
+                                    controlPointsUpdateDirection.topCenter(node,model);
+                                }
+                                if(model.direction.name === 'left-center'){
+                                    controlPointsUpdateDirection.leftCenter(node,model);
+                                }
+                                // if(model.direction.name === 'bottom-center'){
+                                //     controlPointsUpdateDirection.bottomCenter(node,model);
+                                // }
+                                // node.attr({
+                                //     x:-width /2 - 3,
+                                //     y:-height/2 - 3
+                                // });
+                                break;
+                            case 'top-right':
+                                if(model.direction.name === 'top-center'){
+                                    controlPointsUpdateDirection.topCenter(node,model);
+                                }
+                                if(model.direction.name === 'right-center'){
+                                    controlPointsUpdateDirection.rightCenter(node,model);
+                                }
+                                // if(model.direction.name === 'bottom-center'){
+                                //     controlPointsUpdateDirection.bottomCenter(node,model);
+                                // }
+                                // node.attr({
+                                //     x:width /2  - 3,
+                                //     y:-height/2 - 3
+                                // });
+                                break;
+                            case 'bottom-center':
+                                if(model.direction.name === 'bottom-center'){
+                                    controlPointsUpdateDirection.bottomCenter(node,model);
+                                }
+                                if(model.direction.name === 'left-center'||model.direction.name === 'right-center'){
+                                    controlPointsUpdateDirection.leftCenter(node,model,true);
+                                }
+                                // node.attr({
+                                //     x:0,
+                                //     y:height/2 - 3
+                                // });
+                                break;
+                            case 'bottom-left':
+                                if(model.direction.name === 'bottom-center'){
+                                    controlPointsUpdateDirection.bottomCenter(node,model);
+                                }
+                                if(model.direction.name === 'left-center'){
+                                    controlPointsUpdateDirection.leftCenter(node,model);
+                                }
+                                // node.attr({
+                                //     x:-width /2 - 3,
+                                //     y: height/2 - 3
+                                // });
+                                break;
+                            case 'bottom-right':
+                                if(model.direction.name === 'bottom-center'){
+                                    controlPointsUpdateDirection.bottomCenter(node,model);
+                                }
+                                if(model.direction.name === 'right-center'){
+                                    controlPointsUpdateDirection.rightCenter(node,model);
+                                }
+                                // node.attr({
+                                //     x:width /2 - 3,
+                                //     y:height/2 - 3
+                                // });
+                                break;
+                            case 'left-center':
+                                if(model.direction.name === 'top-center'||model.direction.name === 'bottom-center'){
+                                    controlPointsUpdateDirection.topCenter(node,model,true);
+                                }
+                                if(model.direction.name === 'left-center'){
+                                    controlPointsUpdateDirection.leftCenter(node,model);
+                                }
+                                // node.attr({
+                                //     x:-width /2 - 3,
+                                //     y:0
+                                // });
+                                break;
+                            case 'right-center':
+                                if(model.direction.name === 'top-center'|| model.direction.name === 'bottom-center'){
+                                    controlPointsUpdateDirection.topCenter(node,model,true);
+                                }
+                                if(model.direction.name === 'right-center'){
+                                    controlPointsUpdateDirection.rightCenter(node,model);
+                                }
+                                // node.attr({
+                                //     x:width /2 - 3,
+                                //     y:0
+                                // });
+                                break;
+                        }
                     }
-                    if(model.direction.name === 'top-center'){
-                        let absY = node.cfg.attrs.y;
-                        node.attr({
-                            height:height - diffHeight,
-                            y:absY + model.recordPoint.pointTC + 3 //多减了一个点的像素 所以要加3
-                        });
-                    }
-                    if(model.direction.name === 'left-center'){
-                        let absX = node.cfg.attrs.x;
-                        node.attr({
-                            width:width - diffWidth,
-                            x:absX + model.recordPoint.pointLC + 3 //多减了一个点的像素 所以要加3
-                        });
-                    }
-                    // node.attr({
-                    //     x: -width / 4 - (width / 50) * 3,
-                    //     y: -height/ 4 +  width / 100,
-                    //     height: width / 2,
-                    //     width : height / 2 + height / 10,
-                    // });
-                }
-                if(node.cfg.name === 'image-content-part'){
-                    node.attr({
-                        x: -width / 2,
-                        y: -height + height/50*9,
-                        height,
-                        width,
-                    })
-                }
-                if(node.cfg.className === 'control-point'){
-                    switch (node.cfg.name) {
-                        case 'top-center':
-                            if(model.direction.name === 'top-center'){
-                                controlPointsUpdateDirection.topCenter(node,model);
-                            }
-                            if(model.direction.name === 'left-center'||model.direction.name === 'right-center'){
-                                controlPointsUpdateDirection.leftCenter(node,model,true);
-                            }
-                            if(model.direction.name === 'right-center'){
-                                controlPointsUpdateDirection.rightCenter(node,model);
-                            }
-                            // node.attr({
-                            //     y:-height/2 - 3,
-                            // });
-                            break;
-                        case 'top-left':
-                            if(model.direction.name === 'top-center'){
-                                controlPointsUpdateDirection.topCenter(node,model);
-                            }
-                            if(model.direction.name === 'left-center'){
-                                controlPointsUpdateDirection.leftCenter(node,model);
-                            }
-                            // if(model.direction.name === 'bottom-center'){
-                            //     controlPointsUpdateDirection.bottomCenter(node,model);
-                            // }
-                            // node.attr({
-                            //     x:-width /2 - 3,
-                            //     y:-height/2 - 3
-                            // });
-                            break;
-                        case 'top-right':
-                            if(model.direction.name === 'top-center'){
-                                controlPointsUpdateDirection.topCenter(node,model);
-                            }
-                            if(model.direction.name === 'right-center'){
-                                controlPointsUpdateDirection.rightCenter(node,model);
-                            }
-                            // if(model.direction.name === 'bottom-center'){
-                            //     controlPointsUpdateDirection.bottomCenter(node,model);
-                            // }
-                            // node.attr({
-                            //     x:width /2  - 3,
-                            //     y:-height/2 - 3
-                            // });
-                            break;
-                        case 'bottom-center':
-                            if(model.direction.name === 'bottom-center'){
-                                controlPointsUpdateDirection.bottomCenter(node,model);
-                            }
-                            if(model.direction.name === 'left-center'||model.direction.name === 'right-center'){
-                                controlPointsUpdateDirection.leftCenter(node,model,true);
-                            }
-                            // node.attr({
-                            //     x:0,
-                            //     y:height/2 - 3
-                            // });
-                            break;
-                        case 'bottom-left':
-                            if(model.direction.name === 'bottom-center'){
-                                controlPointsUpdateDirection.bottomCenter(node,model);
-                            }
-                            if(model.direction.name === 'left-center'){
-                                controlPointsUpdateDirection.leftCenter(node,model);
-                            }
-                            // node.attr({
-                            //     x:-width /2 - 3,
-                            //     y: height/2 - 3
-                            // });
-                            break;
-                        case 'bottom-right':
-                            if(model.direction.name === 'bottom-center'){
-                                controlPointsUpdateDirection.bottomCenter(node,model);
-                            }
-                            if(model.direction.name === 'right-center'){
-                                controlPointsUpdateDirection.rightCenter(node,model);
-                            }
-                            // node.attr({
-                            //     x:width /2 - 3,
-                            //     y:height/2 - 3
-                            // });
-                            break;
-                        case 'left-center':
-                            if(model.direction.name === 'top-center'||model.direction.name === 'bottom-center'){
-                                controlPointsUpdateDirection.topCenter(node,model,true);
-                            }
-                            if(model.direction.name === 'left-center'){
-                                controlPointsUpdateDirection.leftCenter(node,model);
-                            }
-                            // node.attr({
-                            //     x:-width /2 - 3,
-                            //     y:0
-                            // });
-                            break;
-                        case 'right-center':
-                            if(model.direction.name === 'top-center'|| model.direction.name === 'bottom-center'){
-                                controlPointsUpdateDirection.topCenter(node,model,true);
-                            }
-                            if(model.direction.name === 'right-center'){
-                                controlPointsUpdateDirection.rightCenter(node,model);
-                            }
-                            // node.attr({
-                            //     x:width /2 - 3,
-                            //     y:0
-                            // });
-                            break;
-                    }
-                }
-            });
-            //console.log('update',width,height,nodes);
+                });
+            }
+            if(model.dragRotation){
+                this.setShapeRotate(group,model.style);
+            }
+            //有控制label需求 需要重新复写方法
         },
         controlPointsUpdateDirection(){
             //更新对应顶部控制的中心点坐标
             let topCenter = function (node,model,center) {
+                //获取节点大小的一半
+                let nodeHalfHeight = node.cfg.className === 'rotate-point'?node.attr('height')/2 + 30:node.attr('height')/2;
                 let height = model.style.height;
                 //获取静态绝对坐标点 例如只有Y 就获取Y
                 let absY = Math.abs(model.size[1]/2);
@@ -659,10 +722,10 @@ G6.registerNode(
                     //有两种情况
                     //1.当首次拖动顶部的控制点的时候，model.recordPoint.pointBC为0 不参与中心点的计算
                     //2.当不是第一次拖动顶部的控制点的时候，model.recordPoint.pointBC不为0，参与中心点的实时计算，值对应的是拖动底部的控制点移动的距离
-                    pointY = -height/2 + absY + model.recordPoint.pointBC - 3;
+                    pointY = -height/2 + absY + model.recordPoint.pointBC - nodeHalfHeight;
                 }else{
                     //关于model.recordPoint.pointTC 为控制点移动的距离 参与图形大小 y轴动态改变的计算
-                    pointY = -height + absY + model.recordPoint.pointBC - 3;
+                    pointY = -height + absY + model.recordPoint.pointBC - nodeHalfHeight;
                     model.recordPoint.pointTC = absY + pointY;
                 }
                 if(model.direction.position === 'up' || model.direction.position === 'down'){
@@ -672,6 +735,7 @@ G6.registerNode(
                 }
             };
             let leftCenter = function(node,model,center){
+                let nodeHalfWidth = node.attr('width')/2;
                 let width = model.style.width;
                 //获取静态绝对坐标点 例如只有Y 就获取Y
                 let absX = Math.abs(model.size[0]/2);
@@ -683,10 +747,10 @@ G6.registerNode(
                     //有两种情况
                     //1.当首次拖动顶部的控制点的时候，model.recordPoint.pointBC为0 不参与中心点的计算
                     //2.当不是第一次拖动顶部的控制点的时候，model.recordPoint.pointBC不为0，参与中心点的实时计算，值对应的是拖动底部的控制点移动的距离
-                    pointX = -width/2 + absX + model.recordPoint.pointRC - 3;
+                    pointX = -width/2 + absX + model.recordPoint.pointRC - nodeHalfWidth;
                 }else{
                     //关于model.recordPoint.pointTC 为控制点移动的距离 参与图形大小 y轴动态改变的计算
-                    pointX = -width + absX + model.recordPoint.pointRC - 3;
+                    pointX = -width + absX + model.recordPoint.pointRC - nodeHalfWidth;
                     model.recordPoint.pointLC = absX + pointX;
                 }
                 if(model.direction.position === 'left' || model.direction.position === 'right'){
@@ -697,8 +761,9 @@ G6.registerNode(
             };
             //更新对应底部控制的中心点坐标
             let bottomCenter = function (node,model) {
+                let nodeHalfHeight = node.attr('height')/2;
                 //获取静态绝对坐标点 例如只有Y 就获取Y -3是减去控制点大小的一半
-                let absStaticPointY = Math.abs(model.size[1]/2) - 3;
+                let absStaticPointY = Math.abs(model.size[1]/2) - nodeHalfHeight;
                 //获取动态的y轴坐标点
                 let pointY = node.attr('y');
                 //通过自身叠加的移动的距离
@@ -712,8 +777,9 @@ G6.registerNode(
                 }
             };
             let rightCenter = function (node,model) {
+                let nodeHalfWidth = node.attr('width')/2;
                 //获取静态绝对坐标点 例如只有Y 就获取Y -3是减去控制点大小的一半
-                let absStaticPointX = Math.abs(model.size[0]/2) - 3;
+                let absStaticPointX = Math.abs(model.size[0]/2) - nodeHalfWidth;
                 //获取动态的y轴坐标点
                 let pointX = node.attr('x');
                 //通过自身叠加的移动的距离
