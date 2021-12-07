@@ -494,13 +494,27 @@ const clickNodeBehavior = {
                         },
                         tempWidget: {
                             init:function(){
+                                let self = this;
                                 layui.form.render('select');
-                                layui.form.on('select(electron)', function(data){
+                                layui.form.on('select(type)', function(data){
                                     let model = {
                                         props:{}
                                     };
                                     model.props[data.elem.name] = data.value;
                                     graph.updateItem(nodeItem,model,true);
+
+                                    let widget = document.querySelector('#equipmentType').parentNode;
+                                    let _data = [{
+                                        name: "equipmentType",
+                                        displayName: "设备状态:",
+                                        type: "combo",
+                                        accessType: "attr",
+                                        values: [[0, 1, 2], ["完好1", "待修2", "报废3"]],
+                                        field:"required"
+                                    }];
+                                    let str = self.combo(_data[0],"equipmentType",2);
+                                    widget.innerHTML = str;
+                                    layui.form.render('select');
                                 });
                             },
                             combo:function (data,name,value) {
@@ -509,7 +523,7 @@ const clickNodeBehavior = {
                                     let selected = i === Number(value)? 'selected':'';
                                     temp+= '<option value="'+d+'" '+selected+'>'+ data.values[1][i]+'</option>';
                                 });
-                                return `<select name=${name} lay-filter="electron">${temp}</select>`;
+                                return `<select name=${name} lay-filter=${name} id="${name}">${temp}</select>`;
                             }
                         }
                     },

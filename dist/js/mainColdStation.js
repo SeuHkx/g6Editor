@@ -157,7 +157,7 @@ window.onload = function () {
                     deviceType: "112",
                     nodeType:"boxImage",
                     size:[125,125],
-                    imgSize:[125,80],
+                    imgSize:[125,125],
                     img: "public/images/panel/暖通设备svg/冷水机.svg"
                 },
                 {
@@ -513,7 +513,10 @@ window.onload = function () {
     };
     const ztb = zoomToolsBar();
     const $canvasPaint = $("#canvasPaint");
-    const snapLine = new G6.SnapLine();
+    const snapLine = new G6.SnapLine({
+        itemAlignType:true
+    });
+    const grid = new G6.Grid();
     const toolbar = new G6.ToolBar({
         container: "toolsBar",
         className: "toolsbar-wrap",
@@ -553,13 +556,62 @@ window.onload = function () {
         container: 'canvasPaint',
         width: $canvasPaint.width(),
         height: $canvasPaint.height(),
-        plugins: [snapLine, toolbar],
+        plugins: [snapLine,grid,toolbar],
         fitView: true,
         // fitViewPadding: 20,
         // fitCenter: true,
         enabledStack: true,
         modes: {
-            default: ['drag-canvas', 'drag-node', 'zoom-canvas', 'clickNodeImage','dragControlPoint']
+            default: ['drag-canvas', 'drag-node', 'zoom-canvas',
+            {
+                type:'clickNodeImage',
+                shouldBegin: (nodeItem) => {
+                    dataModel.comp.rightPanelControl.show(function (el) {
+                        let loadFormEl = el.querySelector('#rightPanelForm');
+                        let nodeModel = nodeItem.getModel();
+                        let props = nodeItem.getModel().props;
+                        CreateForm.init({
+                                container:loadFormEl,
+                                init:function (el) {
+                                    let id = el.id;
+                                    $('#'+id).on('input','.layui-input',function () {
+                                        let $this = $(this);
+                                        let val = $this.val();
+                                        let name= $this.attr('name');
+                                        let model = {
+                                            props:{}
+                                        };
+                                        if(name === 'name'){
+                                            model.label = val;
+                                            model.props['name'] = val;
+                                        }else{
+                                            model.props[name] = val;
+                                        }
+                                        console.log(model);
+                                        graph.updateItem(nodeItem,model,true);
+                                    });
+                                }},
+                            props,dataPower);
+                        if(typeof SimpleBar.instances.get(loadFormEl) !== 'undefined'){
+                            SimpleBar.instances.get(loadFormEl).unMount();
+                        }
+                        new SimpleBar(loadFormEl);
+                    });
+                    dataModel.clickNode = {
+                        node:nodeItem
+                    }
+                },
+                shouldEnd:()=>{
+                    dataModel.comp.rightPanelControl.hide(function (el) {
+                        let loadFormEl = el.querySelector('#rightPanelForm');
+                        if(typeof SimpleBar.instances.get(loadFormEl) !== 'undefined'){
+                            SimpleBar.instances.get(loadFormEl).unMount();
+                        }
+                        loadFormEl.innerHTML = '';
+                        dataModel.clickNode = {};
+                    });
+                }
+            },'dragControlPoint']
         },
         defaultNode: {
             anchorPoints: [
@@ -690,6 +742,14 @@ window.onload = function () {
         }
     });
     graph.setMinZoom(0.001);
+    // graph.on('nodeselectchange', (e) => {
+    //     // 当前操作的 item
+    //     console.log(e.target);
+    //     // 当前操作后，所有被选中的 items 集合
+    //     console.log(e.selectedItems);
+    //     // 当前操作时选中(true)还是取消选中(false)
+    //     console.log(e.select);
+    // });
     setTimeout(()=>{
         graph.data(data);
         graph.render();

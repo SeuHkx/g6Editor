@@ -12,27 +12,29 @@ G6.registerNode(
     {
         setState(name, value, item) {
             const group = item.getContainer();
-            const shape = group.get('children')[0]; // 顺序根据 draw 时确定此处[0]代表name:'image-box'
+            const shape = group.get('children')[0];
             if (name === 'click') {
                 if (value) {
                     shape.attr('stroke', '#168DF8');
                     shape.attr('opacity', 1);
-
                 } else {
                     shape.attr('stroke', '#168DF8');
                     shape.attr('opacity', 0);
-
                 }
             }
         },
-        draw: (cfg, group) => {
+        draw(cfg, group){
+            //todo 未更新imgsize
             let imgSize = cfg.imgSize?cfg.imgSize:cfg.size;
-            let shape = group.addShape('rect', {//外边框
+            let style = this.getShapeStyle(cfg,group);
+            cfg.size[0] = style.width;
+            cfg.size[1] = style.height;
+            let shape = group.addShape('rect', {
                 attrs: {
-                    x: -cfg.size[0] / 2,
-                    y: -cfg.size[1] / 2,
-                    width:  cfg.size[0],
-                    height: cfg.size[1],
+                    x: -style.width / 2,
+                    y: -style.height/ 2,
+                    width : style.width,
+                    height: style.height,
                     fill: 'transparent',
                     stroke: '#168DF8',
                     radius: 0,
@@ -255,23 +257,74 @@ G6.registerNode(
             let style = this.getShapeStyle(cfg,group);
             cfg.size[0] = style.width;
             cfg.size[1] = style.height;
-            let shape = group.addShape('rect', {
+            let shape = this.addEditBox(group,style);
+            this.addEditBoxImg(cfg,group,style);
+            this.addRotatePoint(group,style);
+            this.addControlPoints(group,style);
+            this.addTextShape(group,cfg,style);
+            this.setShapeRotate(group,style);
+            return shape;
+        },
+        //todo
+        setShapeRotate(group,style,model){
+            let nodes  = group.get('children');
+            if(style.angle){
+                nodes.forEach(function (node) {
+                    let x = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointLC + model.recordPoint.pointRC)/2:0;
+                    let y = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointTC + model.recordPoint.pointBC)/2:0;
+                    let center = [x,y];
+                    let matrix = node.getMatrix();
+                    let radian = (Math.PI / 180)*style.angle;
+                    // 图形或分组的初始矩阵时 null，为了避免变换一个 null 矩阵，需要将其初始化为单位矩阵
+                    if (!matrix){
+                        matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+                    }
+                    // 3*3 矩阵变换，用于二维渲染
+                    const newMatrix = Util.transform(matrix, [
+                        ['t', -center[0], -center[1]], // translate
+                        ['r', radian],// rotate
+                        ['t', center[0], center[1]]// translate
+                    ]);
+                    node.resetMatrix();
+                    node.setMatrix(newMatrix);
+                });
+            }
+        },
+        afterDraw(cfg, group) {
+            // const image = group.addShape('image', {
+            //     //冷却塔蒸汽
+            //     attrs: {
+            //         x: -cfg.size[0] / 2,
+            //         y: -cfg.size[1] + cfg.size[1]/50*9,
+            //         height: cfg.size[0],
+            //         width: cfg.size[1],
+            //         img: cfg.img[1],
+            //     },
+            //     name: 'image-content-part',
+            //     visible:false,
+            //     draggable: true,
+            // });
+        },
+        addEditBox(group,style){
+            return group.addShape('rect', {
                 //外边框
                 attrs: {
                     x: -style.width / 2,
-                    y: -style.height / 2,
-                    width :style.width,
-                    height:style.height,
+                    y: -style.height/ 2,
+                    width: style.width,
+                    height: style.height,
                     fill: 'transparent',
                     stroke: '#168DF8',
                     radius: 0,
                     opacity: 0,
+                    fillOpacity:0
                 },
                 name: 'image-box',
                 draggable: true,
             });
+        },
+        addEditBoxImg(cfg,group,style){
             group.addShape('image', {
-                //冷却塔外壳
                 attrs: {
                     x: -(style.width - 10)/ 2 ,
                     y: -(style.height- 20)/ 2 ,
@@ -282,76 +335,6 @@ G6.registerNode(
                 name: 'image-content',
                 draggable: true,
             });
-            this.addRotatePoint(group,style);
-            this.addControlPoints(group,style);
-            let imgRotateState = function (group, item, angle) {
-                let itemPoint = {x:cfg.x,y:cfg.y};
-                let shapeMatrix = group.getMatrix();
-                if (!shapeMatrix) shapeMatrix = [1, 0, 0, 1, 0, 0, 0, 0, 1];
-                let center = [item.x, item.y];
-                let groupMatrix = Util.transform(shapeMatrix, [
-                    ['t', -center[0], -center[1]], // 先平移到旋转中心
-                    ['r', (Math.PI / 180) * angle], // 旋转 Math.PI / 3
-                    ['t', center[0], center[1]], // 平移回来
-                ]);
-                group.setMatrix(groupMatrix);
-            };
-            this.setShapeRotate(group,style);
-            return shape;
-        },
-        setShapeRotate(group,style){
-            let nodes  = group.get('children');
-            if(style.angle){
-                nodes.forEach(function (node) {
-                    let center = [0,0];
-                    let matrix = node.getMatrix();
-                    // 图形或分组的初始矩阵时 null，为了避免变换一个 null 矩阵，需要将其初始化为单位矩阵
-                    if (!matrix){
-                        //[0.9335804264972025, 0.3583679495453005, 0, -0.3583679495453005, 0.9335804264972025, 0, 0, 0, 1]
-                        matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-                    }
-                    center[0] = matrix[0];
-                    center[1] = matrix[1];
-                    // 3*3 矩阵变换，用于二维渲染
-                    const newMatrix = Util.transform(matrix, [
-                        ['t', center[0], center[1]], // translate
-                        ['r', (Math.PI / 180)*style.angle],// rotate
-                        ['t', -center[0], -center[1]]// translate
-                    ]);
-                    node.setMatrix(newMatrix);
-                });
-            }
-        },
-        afterDraw(cfg, group) {
-            const image = group.addShape('image', {
-                //冷却塔蒸汽
-                attrs: {
-                    x: -cfg.size[0] / 2,
-                    y: -cfg.size[1] + cfg.size[1]/50*9,
-                    height: cfg.size[0],
-                    width: cfg.size[1],
-                    img: cfg.img[1],
-                },
-                name: 'image-content-part',
-                visible:false,
-                draggable: true,
-            });
-            // image.animate(
-            //     (ratio) => {
-            //         const toMatrix = Util.transform([1, 0, 0, 0, 1, 0, 0, 0, 1], [['s', 1, ratio * 1]]);
-            //         return {
-            //             matrix: toMatrix,
-            //         };
-            //     },
-            //     {
-            //         repeat: true,
-            //         duration: 2000,
-            //         easing: 'easeLinear',
-            //     }
-            // );
-            // image.pauseAnimate();
-            // image.resumeAnimate();
-            // image.isAnimatePaused();
         },
         addRotatePoint(group,style){
             group.addShape('image',{
@@ -361,6 +344,8 @@ G6.registerNode(
                    height:20,
                    x:-10,
                    y:(-style.height/2 - 10 ) - 30,
+                   // x:-10,
+                   // y:-10,
                    img:'public/images/旋转.svg',
                    cursor:'crosshair'
                },
@@ -374,7 +359,7 @@ G6.registerNode(
                attrs:{
                    fill:"#fff",
                    stroke: '#168DF8',
-                   lineWidth: 0.5,
+                   lineWidth: 1,
                    width:6,
                    height:6,
                    x:-3,
@@ -389,7 +374,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:-style.width /2 - 3,
@@ -404,7 +389,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:style.width /2  - 3,
@@ -419,7 +404,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:style.width /2 - 3,
@@ -434,7 +419,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:-style.width /2 - 3,
@@ -449,7 +434,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:-3,
@@ -464,7 +449,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:-style.width /2 - 3,
@@ -479,7 +464,7 @@ G6.registerNode(
                 attrs:{
                     fill:"#fff",
                     stroke: '#168DF8',
-                    lineWidth: 0.5,
+                    lineWidth: 1,
                     width:6,
                     height:6,
                     x:style.width /2 - 3,
@@ -489,6 +474,24 @@ G6.registerNode(
                 visible:false,
                 className:'control-point',
                 name:"right-center"
+            });
+        },
+        addTextShape(group,cfg,style){
+            let text = cfg.hasOwnProperty('label')?cfg.label:'';
+            let visible = style.hasOwnProperty('labelShow')?style.labelShow:false;
+            group.addShape('text', {
+                attrs: {
+                    text: text,
+                    stroke: '#fff',
+                    fontWeight: 200,
+                    x: 0,
+                    y: 0,
+                    textAlign: 'center',
+                    textBaseline: 'middle',
+                },
+                visible:visible,
+                name:'text-shape',
+                draggable: true
             });
         },
         update:function (cfg, item) {
@@ -699,12 +702,29 @@ G6.registerNode(
                                 break;
                         }
                     }
+                    if(node.cfg.name === 'text-shape'){
+
+                    }
                 });
             }
             if(model.dragRotation){
-                this.setShapeRotate(group,model.style);
+                this.setShapeRotate(group,model.style,model);
             }
-            //有控制label需求 需要重新复写方法
+            //有控制label需求重新复写
+            if(cfg.hasOwnProperty('label')){
+                let textShape = nodes[nodes.length - 1];
+                let oldTextShapeValue = textShape.attr('text');
+                let newTextShapeValue = cfg.label;
+                if(oldTextShapeValue !== newTextShapeValue){
+                    cfg.labelCfg = {
+                        style:{
+                            stroke:'#fff',
+                            fill:'#000'
+                        }
+                    };
+                    textShape.attr('text',cfg.label);
+                }
+            }
         },
         controlPointsUpdateDirection(){
             //更新对应顶部控制的中心点坐标

@@ -245,7 +245,7 @@ window.onload = function () {
         container: 'canvasPaint',
         width: $canvasPaint.width(),
         height: $canvasPaint.height(),
-        plugins: [snapLine, toolbar],
+        plugins: [snapLine,grid,toolbar],
         fitView: true,
         // fitViewPadding: 20,
         // fitCenter: true,

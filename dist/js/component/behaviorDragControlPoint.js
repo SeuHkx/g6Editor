@@ -15,7 +15,9 @@ const dragControlPoint = {
     dragRotation:false,
     pointRotate:{
         x:0,
-        y:0
+        y:0,
+        cacheX:0,
+        cacheY:0
     },
     point:{
         x:0,
@@ -32,6 +34,8 @@ const dragControlPoint = {
             this.dragRotation = true;
             this.pointRotate.x = evt.x;
             this.pointRotate.y = evt.y;
+            this.pointRotate.cacheX = evt.x;
+            this.pointRotate.cacheY = evt.y;
         }
         if(target.cfg.className === 'control-point'){
             let direction = target.get('name');
@@ -62,10 +66,8 @@ const dragControlPoint = {
                 x:0,
                 y:0
             };
-            point.x = evt.x - this.pointRotate.x;
-            point.y = evt.y - this.pointRotate.y;
-            this.pointRotate.x = evt.x;
-            this.pointRotate.y = evt.y;
+            point.x = evt.x;
+            point.y = evt.y;
             this.updateNodeSize(this.currentItem,point);
         }
         if(this.dragState){
@@ -121,8 +123,13 @@ const dragControlPoint = {
     handleMouseUp(){
         if(this.currentItem){
             let model = this.currentItem.getModel();
+            // let nodes = this.currentItem.getContainer().get('children');
+            // nodes.forEach(function (node) {
+            //     node.setMatrix(null);
+            // });
             delete model.direction;
             delete model.dragRotation;
+            //console.log(this.currentItem.getContainer().get('children'));
         }
         this.dragState = false;
         this.dragRotation = false;
@@ -137,11 +144,19 @@ const dragControlPoint = {
             model.point = point;
         }
         if(this.dragRotation){
-            //let angle = (Math.atan2((point.y - 0), (point.x - 0))) * (180 / Math.PI);
             model.dragRotation = this.dragRotation;
-            //model.style.angle ? model.style.angle += point.x:model.style.angle = point.x;
-            //let angle = (Math.PI / 180)*model.style.angle;
-            model.style.angle = 1;
+            let R2D = 180 / Math.PI;
+            let radian = Math.atan2((point.y-model.y), (point.x-model.x)) + Math.PI / 2;
+            let angle  = radian*R2D;
+            // let angle  = angleM-angleS;
+            // if(model.style.angle === 360)model.style.angle = 0;
+            // model.style.angle = model.style.angle?model.style.angle+=5:model.style.angle=5;
+            // console.log(model.style.angle);
+            //this.pointRotate.x = point.x;
+            //this.pointRotate.y = point.y;
+            model.style.angle = 0.6912934547563623;
+            //item.resetMatrix();
+            //item.rotate(radian);
             //console.log(angle);
         }
         this.graph.updateItem(item,model,true);
