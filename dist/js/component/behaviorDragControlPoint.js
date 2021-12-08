@@ -17,7 +17,8 @@ const dragControlPoint = {
         x:0,
         y:0,
         cacheX:0,
-        cacheY:0
+        cacheY:0,
+        angle:0
     },
     point:{
         x:0,
@@ -58,9 +59,6 @@ const dragControlPoint = {
     },
     handleMouseMove(evt){
         const { target } = evt;
-        // if(target.cfg.className === 'control-point'){
-        //
-        // }
         if(this.dragRotation){
             let point = {
                 x:0,
@@ -121,15 +119,10 @@ const dragControlPoint = {
         }
     },
     handleMouseUp(){
-        if(this.currentItem){
+        if(this.currentItem && !this.currentItem.destroyed){
             let model = this.currentItem.getModel();
-            // let nodes = this.currentItem.getContainer().get('children');
-            // nodes.forEach(function (node) {
-            //     node.setMatrix(null);
-            // });
             delete model.direction;
             delete model.dragRotation;
-            //console.log(this.currentItem.getContainer().get('children'));
         }
         this.dragState = false;
         this.dragRotation = false;
@@ -147,17 +140,17 @@ const dragControlPoint = {
             model.dragRotation = this.dragRotation;
             let R2D = 180 / Math.PI;
             let radian = Math.atan2((point.y-model.y), (point.x-model.x)) + Math.PI / 2;
-            let angle  = radian*R2D;
+            let angleMove  = radian*R2D;
+            let angle = angleMove - this.pointRotate.angle;
+            this.pointRotate.angle = angleMove;
             // let angle  = angleM-angleS;
             // if(model.style.angle === 360)model.style.angle = 0;
             // model.style.angle = model.style.angle?model.style.angle+=5:model.style.angle=5;
             // console.log(model.style.angle);
             //this.pointRotate.x = point.x;
             //this.pointRotate.y = point.y;
-            model.style.angle = 0.6912934547563623;
-            //item.resetMatrix();
-            //item.rotate(radian);
-            //console.log(angle);
+            model.style.angle = angle;
+            console.log(angle);
         }
         this.graph.updateItem(item,model,true);
     }

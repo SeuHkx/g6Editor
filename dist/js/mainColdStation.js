@@ -156,6 +156,8 @@ window.onload = function () {
                     image: "public/images/panel/暖通设备svg/冷水机.svg",
                     deviceType: "112",
                     nodeType:"boxImage",
+                    labelShow:true,
+                    label:'ohoh',
                     size:[125,125],
                     imgSize:[125,125],
                     img: "public/images/panel/暖通设备svg/冷水机.svg"
@@ -550,6 +552,14 @@ window.onload = function () {
             if (code === 'zoomIn') {
                 ztb().setZoom('min', graph);
             }
+            if (code === 'alignCenter'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.alignCenter(nodes);
+            }
+            if (code === 'alignLeft'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.alignLeft(nodes);
+            }
         }
     });
     const graph = new G6.Graph({
@@ -703,9 +713,13 @@ window.onload = function () {
                             y: point.y,
                             size,
                             img,
+                            label:nodeLabel,
                             props: {
                                 name: nodeLabel,
                                 deviceType: deviceType
+                            },
+                            style:{
+                                labelShow: itemData.labelShow
                             }
                         };
                         if(imgSize !== '')model['imgSize'] = imgSize;
@@ -742,14 +756,15 @@ window.onload = function () {
         }
     });
     graph.setMinZoom(0.001);
-    // graph.on('nodeselectchange', (e) => {
-    //     // 当前操作的 item
-    //     console.log(e.target);
-    //     // 当前操作后，所有被选中的 items 集合
-    //     console.log(e.selectedItems);
-    //     // 当前操作时选中(true)还是取消选中(false)
-    //     console.log(e.select);
-    // });
+    window.g = graph;
+    const model = {
+        id:Math.floor(Math.random() * 1000) + "node",
+        type: "rect",
+        x: 0,
+        y: 0,
+        size:[20,20]
+    };
+    window.m = model;
     setTimeout(()=>{
         graph.data(data);
         graph.render();

@@ -67,7 +67,7 @@ const clickNodeImageBehavior = {
     onNodeClick(evt) {
         const graph = this.graph;
         const nodeItem = evt.item?evt.item:evt;
-        console.log('click start',this.keyState);
+        console.log('click start',nodeItem);
         if(this.trigger === 'shift' && this.keyState && this.keyState === 16){
             if(nodeItem.hasState('click')){
                 graph.setItemState(nodeItem, 'click', false);
@@ -80,15 +80,14 @@ const clickNodeImageBehavior = {
                 }
                 this.selectNodes.push(nodeItem);
             }
+            console.log(this);
         }else{
-            if(nodeItem.getModel().type.indexOf('boxImage') > -1){
-                this.selectNode = nodeItem;
-                this.keyCopyNode= nodeItem;
-                this.selectNodes= [];
-                this.setItemState(nodeItem);
-                if(this.shouldBegin(nodeItem)){
-                    return true;
-                }
+            this.selectNode = nodeItem;
+            this.keyCopyNode= nodeItem;
+            this.selectNodes= [];
+            this.setItemState(nodeItem);
+            if(this.shouldBegin(nodeItem)){
+                return true;
             }
         }
     },
