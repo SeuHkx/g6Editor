@@ -35,10 +35,9 @@ const dragControlPoint = {
             this.dragRotation = true;
             this.pointRotate.x = evt.x;
             this.pointRotate.y = evt.y;
-            this.pointRotate.cacheX = evt.x;
-            this.pointRotate.cacheY = evt.y;
         }
         if(target.cfg.className === 'control-point'){
+            console.log(target);
             let direction = target.get('name');
             let model = item.getModel();
             if(!model.recordPoint){
@@ -143,12 +142,6 @@ const dragControlPoint = {
             let angleMove  = radian*R2D;
             let angle = angleMove - this.pointRotate.angle;
             this.pointRotate.angle = angleMove;
-            // let angle  = angleM-angleS;
-            // if(model.style.angle === 360)model.style.angle = 0;
-            // model.style.angle = model.style.angle?model.style.angle+=5:model.style.angle=5;
-            // console.log(model.style.angle);
-            //this.pointRotate.x = point.x;
-            //this.pointRotate.y = point.y;
             model.style.angle = angle;
             console.log(angle);
         }

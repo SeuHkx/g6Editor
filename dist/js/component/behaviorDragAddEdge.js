@@ -11,6 +11,8 @@ const isPlainObject = (obj) => {
 // G6自定义行为 - 拖拉增加连线
 const dragAddEdgeBehavior = {
     edge: null,
+    dragArrowEdge:false,
+    dragEnterTarget:null,
     anchorIndex: {
         top: 0,
         right: 1,
@@ -37,22 +39,82 @@ const dragAddEdgeBehavior = {
 
     isEnabledAnchorPoint(e) {
         const { target } = e;
-
         return !!target.get("isAnchorPoint");
     },
     shouldAddRealEdge() {
         const { edge } = this;
-
-        const target = edge.getTarget();
-
-        return !isPlainObject(target);
+        if(edge){
+            const target = edge.getTarget();
+            return !isPlainObject(target);
+        }
     },
     getEvents() {
         return {
             "node:mousedown": "handleNodeMouseDown",
+            "edge:dragstart":"handleEdgeDragStart",
+            "edge:drag":"handleEdgeDragMove",
+            "node:dragenter" :"onDragEnter",
+            "node:dragleave" :"onDragLeave",
+            dragend: "handleDragEnd",
             mousemove: "handleMouseMove",
             mouseup: "handleMouseUp"
         };
+    },
+    handleEdgeDragStart(evt){
+        this.edge = evt.item;
+        this.dragArrowEdge = true;
+        this.graph.updateItem(this.edge,{
+            target:{
+                x: evt.x,
+                y: evt.y
+            },
+            targetAnchor:null,
+            targetNode:null
+        });
+    },
+    onDragEnter(evt){
+        const nodeItem = evt.item; // 获取鼠标进入的节点元素对象
+        if(nodeItem.getModel().type !== "image" && nodeItem.getModel().type.indexOf('boxImage') < 0){
+            nodeItem.update({
+                linkPoints: {
+                    top: true,
+                    right: true,
+                    bottom: true,
+                    left: true
+                }
+            });
+            this.dragEnterTarget = evt;
+        }
+    },
+    onDragLeave(){
+        this.dragEnterTarget = null;
+    },
+    handleEdgeDragMove(evt){
+        const { graph, edge } = this;
+        if (!edge) {
+            return;
+        }
+        if(this.dragEnterTarget && this.canFindTargetAnchorPoint(this.dragEnterTarget)){
+            const { item, target } = this.dragEnterTarget;
+            const targetId = item.getModel().id;
+            const targetAnchor = this.getAnchorIndexByName(target.get("name"));
+            graph.updateItem(edge, {
+                target: targetId,
+                targetAnchor
+            });
+            console.log('add',targetAnchor,targetId,edge);
+        }else{
+            graph.updateItem(edge,{
+                target:{
+                    x: evt.x,
+                    y: evt.y
+                }
+            });
+        }
+    },
+    handleDragEnd(evt){
+        this.dragArrowEdge = false;
+        this.edge = null;
     },
     handleNodeMouseDown(evt) {
         const { target , item} = evt;
@@ -87,23 +149,28 @@ const dragAddEdgeBehavior = {
                 targetAnchor
             });
         } else {
-            graph.updateItem(edge, {
-                target: {
-                    x: evt.x,
-                    y: evt.y
-                }
-            });
+            if(!this.dragArrowEdge){
+                graph.updateItem(edge,{
+                    target:{
+                        x: evt.x,
+                        y: evt.y
+                    }
+                });
+            }
         }
     },
     handleMouseUp() {
         const { graph, edge } = this;
-        if (!edge) {
-            return;
+        if(!this.dragArrowEdge){
+            if (!edge) {
+                return;
+            }
+            if (!this.shouldAddRealEdge()) {
+                graph.removeItem(edge);
+            }
+            this.edge = null;
+            console.log('up')
         }
-        if (!this.shouldAddRealEdge()) {
-            graph.removeItem(edge);
-        }
-        this.edge = null;
     }
 };
 G6.registerBehavior("drag-add-edge", dragAddEdgeBehavior);
