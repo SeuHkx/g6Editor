@@ -268,13 +268,13 @@ G6.registerNode(
         //todo
         setShapeRotate(group,style,model){
             let nodes  = group.get('children');
-            if(style.angle){
+            if(style.diffAngle){
                 nodes.forEach(function (node) {
                     let x = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointLC + model.recordPoint.pointRC)/2:0;
                     let y = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointTC + model.recordPoint.pointBC)/2:0;
                     let center = [x,y];
                     let matrix = node.getMatrix();
-                    let radian = (Math.PI / 180)*style.angle;
+                    let radian = (Math.PI / 180)*style.diffAngle;
                     // 图形或分组的初始矩阵时 null，为了避免变换一个 null 矩阵，需要将其初始化为单位矩阵
                     if (!matrix){
                         matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];

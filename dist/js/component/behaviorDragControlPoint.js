@@ -13,13 +13,7 @@ const dragControlPoint = {
     },
     dragState:false,
     dragRotation:false,
-    pointRotate:{
-        x:0,
-        y:0,
-        cacheX:0,
-        cacheY:0,
-        angle:0
-    },
+    rotateAngle:0,
     point:{
         x:0,
         y:0
@@ -32,12 +26,11 @@ const dragControlPoint = {
         const { target , item} = evt;
         this.currentItem = item;
         if(target.cfg.className === 'rotate-point'){
-            this.dragRotation = true;
-            this.pointRotate.x = evt.x;
-            this.pointRotate.y = evt.y;
+            let model = item.getModel();
+            this.rotateAngle = model.style.angle;
+            this.dragRotation= true;
         }
         if(target.cfg.className === 'control-point'){
-            console.log(target);
             let direction = target.get('name');
             let model = item.getModel();
             if(!model.recordPoint){
@@ -60,11 +53,9 @@ const dragControlPoint = {
         const { target } = evt;
         if(this.dragRotation){
             let point = {
-                x:0,
-                y:0
+                x:evt.x,
+                y:evt.y
             };
-            point.x = evt.x;
-            point.y = evt.y;
             this.updateNodeSize(this.currentItem,point);
         }
         if(this.dragState){
@@ -136,12 +127,13 @@ const dragControlPoint = {
             model.point = point;
         }
         if(this.dragRotation){
-            model.dragRotation = this.dragRotation;
             let R2D = 180 / Math.PI;
             let radian = Math.atan2((point.y-model.y), (point.x-model.x)) + Math.PI / 2;
-            let angleMove  = radian*R2D;
-            let angle = angleMove - this.pointRotate.angle;
-            this.pointRotate.angle = angleMove;
+            let angle = radian*R2D;
+            let diffAngle = angle - this.rotateAngle;
+            this.rotateAngle = angle;
+            model.dragRotation = this.dragRotation;
+            model.style.diffAngle = diffAngle;
             model.style.angle = angle;
             console.log(angle);
         }
