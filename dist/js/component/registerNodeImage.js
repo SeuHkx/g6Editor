@@ -270,6 +270,7 @@ G6.registerNode(
             let nodes  = group.get('children');
             if(style.diffAngle){
                 nodes.forEach(function (node) {
+                    //计算的偏移量
                     let x = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointLC + model.recordPoint.pointRC)/2:0;
                     let y = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointTC + model.recordPoint.pointBC)/2:0;
                     let center = [x,y];
@@ -487,10 +488,11 @@ G6.registerNode(
                     x: 0,
                     y: 0,
                     textAlign: 'center',
-                    textBaseline: 'middle',
+                    textBaseline: 'middle'
                 },
                 visible:visible,
-                name:'text-shape',
+                name:'label-text',
+                className:'label-text',
                 draggable: true
             });
         },
@@ -593,7 +595,7 @@ G6.registerNode(
                             width,
                         })
                     }
-                    if(node.cfg.className === 'control-point'||node.cfg.className === 'rotate-point'){
+                    if(node.cfg.className === 'control-point'|| node.cfg.className === 'rotate-point'){
                         switch (node.cfg.name) {
                             case 'top-center':
                                 if(model.direction.name === 'top-center'){
@@ -702,8 +704,11 @@ G6.registerNode(
                                 break;
                         }
                     }
-                    if(node.cfg.name === 'text-shape'){
-
+                    if(node.cfg.name === 'label-text'){
+                        node.attr({
+                            x:model.centerPoint.insideX,
+                            y:model.centerPoint.insideY
+                        });
                     }
                 });
             }
@@ -747,6 +752,8 @@ G6.registerNode(
                     //关于model.recordPoint.pointTC 为控制点移动的距离 参与图形大小 y轴动态改变的计算
                     pointY = -height + absY + model.recordPoint.pointBC - nodeHalfHeight;
                     model.recordPoint.pointTC = absY + pointY;
+                    //计算内部中心点y坐标 +3为控制点的一半
+                    model.centerPoint.insideY = (model.recordPoint.pointTC + model.recordPoint.pointBC + 3)/2;
                 }
                 if(model.direction.position === 'up' || model.direction.position === 'down'){
                     node.attr({
@@ -772,6 +779,8 @@ G6.registerNode(
                     //关于model.recordPoint.pointTC 为控制点移动的距离 参与图形大小 y轴动态改变的计算
                     pointX = -width + absX + model.recordPoint.pointRC - nodeHalfWidth;
                     model.recordPoint.pointLC = absX + pointX;
+                    //计算内部中心点的x坐标
+                    model.centerPoint.insideX = (model.recordPoint.pointLC + model.recordPoint.pointRC + 3)/2;
                 }
                 if(model.direction.position === 'left' || model.direction.position === 'right'){
                     node.attr({
@@ -795,12 +804,14 @@ G6.registerNode(
                         y:pointY
                     });
                 }
+                //计算内部中心点的y坐标
+                model.centerPoint.insideY = (model.recordPoint.pointBC + model.recordPoint.pointTC + 3)/2;
             };
             let rightCenter = function (node,model) {
                 let nodeHalfWidth = node.attr('width')/2;
                 //获取静态绝对坐标点 例如只有Y 就获取Y -3是减去控制点大小的一半
                 let absStaticPointX = Math.abs(model.size[0]/2) - nodeHalfWidth;
-                //获取动态的y轴坐标点
+                //获取动态的x轴坐标点
                 let pointX = node.attr('x');
                 //通过自身叠加的移动的距离
                 pointX += model.point.x;
@@ -811,6 +822,8 @@ G6.registerNode(
                         x:pointX
                     });
                 }
+                //计算内部中心点的x坐标
+                model.centerPoint.insideX = (model.recordPoint.pointRC + model.recordPoint.pointLC + 3)/2;
             };
             return {
                 topCenter:topCenter,

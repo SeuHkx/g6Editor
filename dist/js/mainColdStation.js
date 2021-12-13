@@ -560,6 +560,26 @@ window.onload = function () {
                 const nodes = graph.findAllByState('node', 'click');
                 utils.alignLeft(nodes);
             }
+            if (code === 'alignRight'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.alignRight(nodes);
+            }
+            if (code === 'alignTop'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.alignTop(nodes);
+            }
+            if (code === 'alignBottom'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.alignBottom(nodes);
+            }
+            if(code === 'toFront'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.toFront(nodes);
+            }
+            if(code === 'toBack'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.toBack(nodes);
+            }
         }
     });
     const graph = new G6.Graph({
@@ -759,10 +779,10 @@ window.onload = function () {
     window.g = graph;
     const model = {
         id:Math.floor(Math.random() * 1000) + "node",
-        type: "rect",
+        type: "circle",
         x: 0,
         y: 0,
-        size:[20,20]
+        size:[12,12]
     };
     window.m = model;
     setTimeout(()=>{

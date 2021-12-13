@@ -80,7 +80,6 @@ const clickNodeImageBehavior = {
                 }
                 this.selectNodes.push(nodeItem);
             }
-            console.log(this);
         }else{
             this.selectNode = nodeItem;
             this.keyCopyNode= nodeItem;
@@ -167,9 +166,9 @@ const clickNodeImageBehavior = {
             } else {
                 for (let key in obj) {
                     let value = obj[key];
-                    if (typeof value == 'function') {
+                    if (typeof value === 'function') {
                         newObj[key] = value.bind(newObj);
-                    } else if (typeof value == 'object') {
+                    } else if (typeof value === 'object') {
                         if (Array.isArray(value)) {
                             newObj[key] = [];
                             value.forEach(item => {

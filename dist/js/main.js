@@ -261,7 +261,16 @@ window.onload = function () {
                 [1, 0.5],
                 [0.5, 1],
                 [0, 0.5]
-            ]
+            ],
+            style:{
+                fill:'#168DF8',
+                stroke: '#168DF8'
+            },
+            labelCfg: {
+                style: {
+                    fill: '#fff'
+                }
+            }
         },
         defaultEdge: {
             type: 'polyline',
@@ -278,9 +287,9 @@ window.onload = function () {
         },
         nodeStateStyles: {
             click: {
-                stroke: '#168DF8',
+                stroke: '#004df8',
                 lineWidth: 2,
-                fill: '#168DF8'
+                fill: '#004df8'
             }
         },
     });
@@ -353,9 +362,6 @@ window.onload = function () {
             });
         }
     });
-    graph.on('edge:click', (e => {
-        console.log("edge");
-    }));
     graph.on('aftercreateedge', (e) => {
         console.log(e.edge);
     });

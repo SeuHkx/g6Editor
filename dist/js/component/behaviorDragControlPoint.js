@@ -27,7 +27,15 @@ const dragControlPoint = {
         this.currentItem = item;
         if(target.cfg.className === 'rotate-point'){
             let model = item.getModel();
-            this.rotateAngle = model.style.angle;
+            let centerPoints = [model.y,model.x];
+            if(model.hasOwnProperty('centerPoint')){
+                let cy = model.centerPoint.insideY + model.y;
+                let cx = model.centerPoint.insideX + model.x;
+                centerPoints = [cy,cx];
+            }
+            let R2D = 180 / Math.PI;
+            let radian = Math.atan2((evt.y-centerPoints[0]), (evt.x-centerPoints[1])) + Math.PI / 2;
+            this.rotateAngle = radian * R2D;
             this.dragRotation= true;
         }
         if(target.cfg.className === 'control-point'){
@@ -39,6 +47,10 @@ const dragControlPoint = {
                     pointRC:0,
                     pointBC:0,
                     pointLC:0
+                };
+                model.centerPoint = {
+                    insideX:0,
+                    insideY:0
                 };
             }
             this.point.x = evt.x;
@@ -127,8 +139,14 @@ const dragControlPoint = {
             model.point = point;
         }
         if(this.dragRotation){
+            let centerPoints = [model.y,model.x];
+            if(model.hasOwnProperty('centerPoint')){
+                let cy = model.centerPoint.insideY + model.y;
+                let cx = model.centerPoint.insideX + model.x;
+                centerPoints = [cy,cx];
+            }
             let R2D = 180 / Math.PI;
-            let radian = Math.atan2((point.y-model.y), (point.x-model.x)) + Math.PI / 2;
+            let radian = Math.atan2((point.y-centerPoints[0]), (point.x-centerPoints[1])) + Math.PI / 2;
             let angle = radian*R2D;
             let diffAngle = angle - this.rotateAngle;
             this.rotateAngle = angle;

@@ -56,8 +56,32 @@
             <li class="item" code='remove' data-tippy-content="删除">
                 <i class="iconfontEditor icon-ashbin"></i>
             </li>
+            <li class="item" code='alignLeft' data-tippy-content="左对齐">
+                <i class="iconfontEditor icon-zuoduiqi"></i>
+            </li>
+            <li class="item" code='alignRight' data-tippy-content="右对齐">
+                <i class="iconfontEditor icon-youduiqi"></i>
+            </li>
+            <li class="item" code='alignTop' data-tippy-content="顶对齐">
+                <i class="iconfontEditor icon-dingbuduiqi"></i>
+            </li>
+            <li class="item" code='alignBottom' data-tippy-content="底对齐">
+                <i class="iconfontEditor icon-dibuduiqi"></i>
+            </li>
+            <li class="item" code='alignCenter' data-tippy-content="垂直居中">
+                <i class="iconfontEditor icon-shuxiangjuzhongduiqi"></i>
+            </li>
+            <li class="item" code='alignCenter' data-tippy-content="水平居中">
+                <i class="iconfontEditor icon-hengxiangjuzhongduiqi"></i>
+            </li>
+            <li class="item" code='toFront' data-tippy-content="置于顶层">
+                <i class="iconfontEditor icon-zhiyudingceng"></i>
+            </li>
+            <li class="item" code='toBack' data-tippy-content="置于底层">
+                <i class="iconfontEditor icon-zhiyudiceng"></i>
+            </li>
         </ul>
-        <div id="searchWrap">
+        <div id="searchWrap" style="right: 0;display: none;">
             <input type="text" placeholder="请输入物理编码" class="ht-searchInput" id="searchInput">
             <a class="ht-searchBtn" id="searchBtn">搜索</a>
             <!--<a class="ht-searchBtn" id="testBtn1" style="border-radius: 4px;left: 150px;">开始动画</a>-->
@@ -73,11 +97,13 @@
 <script src="lib/createForm/createForm.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.js"></script>
 <script src="lib/antv/g6-4.2.7/g6.min.js"></script>
+<!--<script src="lib/antv/g6-4.5.0/g6.min.js"></script>-->
 <script src="https://www.layuicdn.com/layui/layui.js"></script>
 <script src="bimRefrigeratingStation.js"></script>
 <script src="dist/js/component/behaviorDragControlPoint.js"></script>
 <script src="dist/js/component/behaviorClickNodeImage.js"></script>
 <script src="dist/js/component/registerNodeImage.js"></script>
+<script src="dist/js/component/utils.js"></script>
 <script src="configData/dataPower.js"></script>
 <script src="dist/js/dataModel.js"></script>
 <script src="dist/js/mainColdStation.js"></script>
