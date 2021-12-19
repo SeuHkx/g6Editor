@@ -76,6 +76,9 @@
 .centerContainer{
     top: 34px;
     left: 261px;
+    /*background: #021739;*/
+}
+.g6-grid-container {
     background: #021739;
 }
 #searchWrap{

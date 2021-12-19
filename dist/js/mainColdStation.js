@@ -518,7 +518,9 @@ window.onload = function () {
     const snapLine = new G6.SnapLine({
         itemAlignType:true
     });
-    const grid = new G6.Grid();
+    const grid = new G6.Grid({
+        img:"url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKcAAACnCAYAAAB0FkzsAAAACXBIWXMAAC4jAAAuIwF4pT92AAADlklEQVR4nO3dPW5bVxSF0fPuu/xzCLExglRpXHsCGX8mEKTODBIgNgzbkEUyeBRdJTJFIPDbFNZqVGrj6pPE7gztx1+ONZO23dXyzdv6/Nuvc0246G63rS9fHurTx8+xGyebV+taLHq9f/chYM3TrtnZ5psJ3yZOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4idWnaxFzOaw39XC+WBH7QH2s1trpAkSyaWNrQ/Rb1pU7+3TGZDaL/ek7z7rhgukxD4dD9MbJ4y9Pe1E7+5z3dVpb1bIq+sbP9Ji3cIeozvd9XtJOnzmJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iRW7z/9PNu2Ybk+fZ1zwyX71bKO+0P1u+wLbsfeaz+26pv7gDVPu2Znbz/s5ls6Pt6TnHXDBcc+Vh2P1faH2I0nY6vjMFTr+4Ax33DFzn7/x++z7WzbXS3fvK05N1yy3m1P5wXvw8/2bV6tqy96fXz3IWDN067Z6TMnscRJLHESS5zEEiexxEkscRJLnMQSJ7HESSxxEkucxBInscRJLHESS5zEEiexxEkscRJLnMQSJ7HESSxxEkucxBInscRJLHESS5zEEiexxEkscRJLnMQSJ7HESSxxEkucxBInsfpi0efbNp1RqapZN1wwDEONbYjeWKcLKsNp60va2e922+8y6r/sV5uaDqjMueE5eh9rtV5Fb/wq/S2/es7O/teff3+vPf/Stsdavq6ac8Mld+c7RJ9u4A7R9Nfo/Q3cIXruTp85iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWOIkljiJJU5iiZNY4iSWOIklTmKJk1jiJJY4iSVOYomTWH26CzOb9bKO59s0qVprj9fGgjfW+QretDX5LevKnbOeFzyMYz2EnxdsbTj9g0k/2zf9wNsNnEG8Zmef8+JX24+1rIq+OuaC2//LBTduX1X9A1p1jN1ni79kAAAAAElFTkSuQmCC)"
+    });
     const toolbar = new G6.ToolBar({
         container: "toolsBar",
         className: "toolsbar-wrap",
@@ -552,9 +554,13 @@ window.onload = function () {
             if (code === 'zoomIn') {
                 ztb().setZoom('min', graph);
             }
-            if (code === 'alignCenter'){
+            if (code === 'alignVerticalCenter'){
                 const nodes = graph.findAllByState('node', 'click');
-                utils.alignCenter(nodes);
+                utils.alignVerticalCenter(nodes);
+            }
+            if (code === 'alignHorizontalCenter'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.alignHorizontalCenter(nodes);
             }
             if (code === 'alignLeft'){
                 const nodes = graph.findAllByState('node', 'click');
@@ -571,6 +577,10 @@ window.onload = function () {
             if (code === 'alignBottom'){
                 const nodes = graph.findAllByState('node', 'click');
                 utils.alignBottom(nodes);
+            }
+            if(code === 'averageHorizontal'){
+                const nodes = graph.findAllByState('node', 'click');
+                utils.averageHorizontal(nodes);
             }
             if(code === 'toFront'){
                 const nodes = graph.findAllByState('node', 'click');
@@ -775,7 +785,7 @@ window.onload = function () {
             tippy('[data-tippy-content]');
         }
     });
-    graph.setMinZoom(0.001);
+    graph.setMinZoom(0.2);
     window.g = graph;
     const model = {
         id:Math.floor(Math.random() * 1000) + "node",

@@ -1,22 +1,44 @@
-//todo 拉伸的时候 坐标点变了 需要重新计算坐标点
 let utils = {
-    alignCenter(nodes){
+    averageHorizontal(nodes){
+
+    },
+    alignHorizontalCenter(nodes){
         //中心对齐
         let points = [];
         if(nodes.length>1&& Array.isArray(nodes)){
             nodes.forEach(function (node,index) {
-                points[index] = node.getModel().x;
+                let bbox = node.getBBox();
+                points[index] = bbox.centerY;
             });
-            let min = Math.min.apply(null,points);
+            let middle = this._middle(points);
             nodes.forEach(function (node) {
-                let model= node.getModel();
-                if(model.x !== min){
-                    let point = {
-                        x:min,
-                        y:model.y
-                    };
-                    node.updatePosition(point,true);
-                }
+                let bbox = node.getBBox();
+                let model = node.getModel();
+                let diffY = middle - bbox.centerY;
+                let point= {
+                    y:model.y + diffY
+                };
+                node.updatePosition(point);
+            });
+        }
+    },
+    alignVerticalCenter(nodes){
+        //中心对齐
+        let points = [];
+        if(nodes.length>1&& Array.isArray(nodes)){
+            nodes.forEach(function (node,index) {
+                let bbox = node.getBBox();
+                points[index] = bbox.centerX;
+            });
+            let middle = this._middle(points);
+            nodes.forEach(function (node) {
+                let bbox = node.getBBox();
+                let model = node.getModel();
+                let diffX = middle - bbox.centerX;
+                let point= {
+                    x:model.x + diffX
+                };
+                node.updatePosition(point);
             });
         }
     },
@@ -25,25 +47,21 @@ let utils = {
         let points = [];
         if(nodes.length > 1&& Array.isArray(nodes)){
             nodes.forEach(function (node,index) {
-                let model = node.getModel();
-                let w = model.style.hasOwnProperty('width') ? model.style.width : model.size[0];
-                let insideX = 0;
-                if(model.hasOwnProperty('centerPoint'))insideX = model.centerPoint.insideX - 3;
+                let bbox = node.getBBox();
                 points[index] = {
-                    x: model.x + insideX -  w/2,
-                    w: w
+                    x: bbox.minX
                 };
             });
             points.sort(this._compare("x",true));
             let min = points[0];
-            console.log(points);
             nodes.forEach(function (node) {
-                let model= node.getModel();
-                let w = model.style.hasOwnProperty('width') ? model.style.width : model.size[0];
-                let pointX = model.hasOwnProperty('centerPoint')?model.x + model.centerPoint.insideX:model.x;
-                if((pointX -  w/2) !== min.x){
+                let bbox = node.getBBox();
+                if(bbox.minX !== min.x){
+                    let model = node.getModel();
+                    let width = model.style.hasOwnProperty('width') ? model.style.width : model.size[0];
+                    let diffX = min.x - bbox.centerX;
                     let point = {
-                        x:min.x + w/2,
+                        x:model.x + diffX + width/2,
                         y:model.y
                     };
                     node.updatePosition(point);
@@ -56,26 +74,21 @@ let utils = {
         let points = [];
         if(nodes.length>1&& Array.isArray(nodes)){
             nodes.forEach(function (node,index) {
-                let model = node.getModel();
+                let bbox = node.getBBox();
                 points[index] = {
-                    x: model.x,
-                    w: model.style.hasOwnProperty('width') ? model.style.width : model.size[0]
+                    x: bbox.maxX
                 };
             });
             points.sort(this._compare("x",false));
-            let min = points[0];
+            let max = points[0];
             nodes.forEach(function (node) {
-                let model= node.getModel();
-                let w = model.style.hasOwnProperty('width') ? model.style.width : model.size[0];
-                if(model.x !== min.x){
-                    let dx = 0;
-                    if(min.w < w){
-                        dx = min.x - w/2 + min.w/2;
-                    }else{
-                        dx = min.x + (min.w/2 - w/2);
-                    }
+                let bbox = node.getBBox();
+                if(bbox.maxX !== max.x){
+                    let model = node.getModel();
+                    let width = model.style.hasOwnProperty('width') ? model.style.width : model.size[0];
+                    let diffX = max.x - bbox.centerX;
                     let point = {
-                        x:dx,
+                        x:model.x + diffX - width/2,
                         y:model.y
                     };
                     node.updatePosition(point,true);
@@ -88,28 +101,22 @@ let utils = {
         let points = [];
         if(nodes.length>1&& Array.isArray(nodes)){
             nodes.forEach(function (node,index) {
-                let model = node.getModel();
+                let bbox = node.getBBox();
                 points[index] = {
-                    y: model.y,
-                    h: model.style.hasOwnProperty('height') ? model.style.height : model.size[1]
+                    y: bbox.minY
                 };
             });
             points.sort(this._compare("y",true));
             let min = points[0];
-            console.log(points,min);
             nodes.forEach(function (node) {
-                let model= node.getModel();
-                let h = model.style.hasOwnProperty('height') ? model.style.height : model.size[1];
-                if(model.y !== min.y){
-                    let dy = 0;
-                    if(min.h < h){
-                        dy = min.y + h/2 - min.h/2;
-                    }else{
-                        dy = min.y - (min.h/2 - h/2);
-                    }
+                let bbox = node.getBBox();
+                if(bbox.minY !== min.y){
+                    let model  = node.getModel();
+                    let height = model.style.hasOwnProperty('height') ? model.style.height : model.size[1];
+                    let diffY= min.y - bbox.centerY;
                     let point = {
                         x:model.x,
-                        y:dy
+                        y:model.y + diffY + height/2
                     };
                     node.updatePosition(point,true);
                 }
@@ -121,28 +128,22 @@ let utils = {
         let points = [];
         if(nodes.length>1&& Array.isArray(nodes)){
             nodes.forEach(function (node,index) {
-                let model = node.getModel();
+                let bbox = node.getBBox();
                 points[index] = {
-                    y: model.y,
-                    h: model.style.hasOwnProperty('height') ? model.style.height : model.size[1]
+                    y: bbox.maxY
                 };
             });
             points.sort(this._compare("y"));
-            let min = points[0];
-            console.log(points,min);
+            let max = points[0];
             nodes.forEach(function (node) {
-                let model= node.getModel();
-                let h = model.style.hasOwnProperty('height') ? model.style.height : model.size[1];
-                if(model.y !== min.y){
-                    let dy = 0;
-                    if(min.h < h){
-                        dy = min.y + (min.h/2 - h/2);
-                    }else{
-                        dy = min.y - (min.h/2 - h/2);
-                    }
+                let bbox = node.getBBox();
+                if(bbox.maxY !== max.y){
+                    let model  = node.getModel();
+                    let height = model.style.hasOwnProperty('height') ? model.style.height : model.size[1];
+                    let diffY= max.y - bbox.centerY;
                     let point = {
                         x:model.x,
-                        y:dy
+                        y:model.y + diffY - height/2
                     };
                     node.updatePosition(point,true);
                 }
@@ -168,6 +169,14 @@ let utils = {
             }else{
                 return b - a;
             }
+        }
+    },
+    _middle(args){
+        args.sort(); //排序
+        if(args.length%2===0){ //判断数字个数是奇数还是偶数
+            return ((args[args.length/2]+args[args.length/2-1])/2);//偶数个取中间两个数的平均数
+        }else{
+            return args[parseInt(args.length/2)];//奇数个取最中间那个数
         }
     }
 };

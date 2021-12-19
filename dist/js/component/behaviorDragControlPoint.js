@@ -53,6 +53,7 @@ const dragControlPoint = {
                     insideY:0
                 };
             }
+            //model.recordPoint.cacheX = model.x;
             this.point.x = evt.x;
             this.point.y = evt.y;
             this.cachePoint.x = evt.x;
@@ -123,6 +124,19 @@ const dragControlPoint = {
     handleMouseUp(){
         if(this.currentItem && !this.currentItem.destroyed){
             let model = this.currentItem.getModel();
+            if(model.hasOwnProperty("recordPoint")){
+                let x = model.recordPoint.cacheX + model.centerPoint.insideX;
+                let group = this.currentItem.getContainer();
+                let bbox = this.currentItem.getBBox();
+                // let m = [1, 0, 0, 0, 1, 0, bbox.x, 42.8487, 1];
+                // group.attr({
+                //     matrix:m
+                // });
+                //model.x = x;
+                //this.currentItem.updatePosition({x:x});
+                //model.x = bbox.x;
+            }
+            console.log(this.currentItem.getBBox());
             delete model.direction;
             delete model.dragRotation;
         }

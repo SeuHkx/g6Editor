@@ -271,8 +271,8 @@ G6.registerNode(
             if(style.diffAngle){
                 nodes.forEach(function (node) {
                     //计算的偏移量
-                    let x = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointLC + model.recordPoint.pointRC)/2:0;
-                    let y = model&&model.hasOwnProperty('recordPoint')?(model.recordPoint.pointTC + model.recordPoint.pointBC)/2:0;
+                    let x = model&&model.hasOwnProperty('centerPoint')?model.centerPoint.insideX:0;
+                    let y = model&&model.hasOwnProperty('centerPoint')?model.centerPoint.insideY:0;
                     let center = [x,y];
                     let matrix = node.getMatrix();
                     let radian = (Math.PI / 180)*style.diffAngle;
@@ -781,6 +781,8 @@ G6.registerNode(
                     model.recordPoint.pointLC = absX + pointX;
                     //计算内部中心点的x坐标
                     model.centerPoint.insideX = (model.recordPoint.pointLC + model.recordPoint.pointRC + 3)/2;
+                    //model.x = model.recordPoint.cacheX + model.centerPoint.insideX;
+
                 }
                 if(model.direction.position === 'left' || model.direction.position === 'right'){
                     node.attr({
@@ -824,6 +826,7 @@ G6.registerNode(
                 }
                 //计算内部中心点的x坐标
                 model.centerPoint.insideX = (model.recordPoint.pointRC + model.recordPoint.pointLC + 3)/2;
+                //model.x = model.recordPoint.cacheX + model.centerPoint.insideX;
             };
             return {
                 topCenter:topCenter,
